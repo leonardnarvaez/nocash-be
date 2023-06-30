@@ -1,9 +1,12 @@
 package com.champ.nocash.controller;
 
+import com.champ.nocash.bean.RegisterBean;
+import com.champ.nocash.collection.UserEntity;
 import com.champ.nocash.request.AuthenticationRequest;
 import com.champ.nocash.response.AuthenticationResponse;
 import com.champ.nocash.response.ErrorResponse;
 import com.champ.nocash.security.CustomUserDetailService;
+import com.champ.nocash.service.UserEntityService;
 import com.champ.nocash.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,6 +29,8 @@ public class AuthenticationController {
     private CustomUserDetailService customUserDetailService;
     @Autowired
     private JwtUtil jwtUtil;
+    @Autowired
+    private UserEntityService userEntityService;
     @PostMapping("/authenticate")
     public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest) throws Exception {
         try {
@@ -41,6 +46,17 @@ public class AuthenticationController {
         final UserDetails userDetails = customUserDetailService.loadUserByUsername(authenticationRequest.getUsername());
         final String jwt = jwtUtil.generateToken(userDetails);
         return ResponseEntity.ok(new AuthenticationResponse(jwt));
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<?> register(@RequestBody RegisterBean registerBean) throws Exception {
+        UserEntity user = UserEntity.builder()
+                .emailAddress(registerBean.getEmailAddress())
+                .pin(registerBean.getPin())
+                .mobileNumber(registerBean.getMobileNumber())
+                .build();
+        UserEntity newUser = userEntityService.save(user);
+        return ResponseEntity.ok(newUser);
     }
 
     @GetMapping("/test")
