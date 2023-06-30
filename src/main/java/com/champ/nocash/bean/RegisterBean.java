@@ -14,13 +14,18 @@ import javax.validation.constraints.Size;
 @NoArgsConstructor
 @Data
 public class RegisterBean {
-    @NotNull
+
     private String emailAddress;
-    @NotNull
-    @Size(min = 11, max = 11)
+
     private String mobileNumber;
-    @NotNull
-    @Size(min = 6, max = 6)
+
     private String pin;
+
+    public boolean isValid() {
+        if (this.pin.length() == 4) {
+            return true;
+        }
+        return false;
+    }
 
 }

@@ -25,11 +25,11 @@ public class UserEntityServiceImpl implements UserEntityService {
     public UserEntity save(UserEntity user) throws Exception {
         UserEntity existingUser = findUserByEmail(user.getEmailAddress());
         if(existingUser != null) {
-            throw new Exception("Email already existing");
+            throw new Exception("Email already exists");
         }
         existingUser = findUserByMobile(user.getMobileNumber());
         if(existingUser != null) {
-            throw new Exception("Mobile number already existing");
+            throw new Exception("Mobile number already exists");
         }
         user.setIsLocked(false);
         user.setIsActive(true);

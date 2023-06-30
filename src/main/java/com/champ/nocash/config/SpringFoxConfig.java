@@ -1,4 +1,4 @@
-package com.mongo.mongodemo.config;
+package com.champ.nocash.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
