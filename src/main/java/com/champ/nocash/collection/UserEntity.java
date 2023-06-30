@@ -23,4 +23,5 @@ public class UserEntity {
     private LocalDateTime lastDateModified;
     private LocalDateTime timestamp;
     private LocalDateTime lastLoginDate;
+    private String payee;
 }
