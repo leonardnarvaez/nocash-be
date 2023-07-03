@@ -46,7 +46,17 @@ public class AuthenticationController {
         }
         final UserDetails userDetails = customUserDetailService.loadUserByUsername(authenticationRequest.getMobileNumber());
         final String jwt = jwtUtil.generateToken(userDetails);
-        return ResponseEntity.ok(new AuthenticationResponse(jwt));
+        final UserEntity userEntity = userEntityService.findUserByMobile(userDetails.getUsername());
+        return ResponseEntity.ok(
+                AuthenticationResponse.builder()
+                        .firstName("Jon")
+                        .lastName("Narva")
+                        .emailAddress(userEntity.getEmailAddress())
+                        .mobileNumber(userEntity.getMobileNumber())
+                        .jwt(jwt)
+                        .userID(userEntity.getId())
+                        .build()
+        );
     }
 
     @PostMapping("/register")
