@@ -4,6 +4,7 @@ import com.champ.nocash.collection.UserEntity;
 import com.champ.nocash.repository.UserEntityRepository;
 import com.champ.nocash.service.UserEntityService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -11,6 +12,8 @@ import java.time.LocalDateTime;
 public class UserEntityServiceImpl implements UserEntityService {
     @Autowired
     private UserEntityRepository userEntityRepository;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
     @Override
     public UserEntity findUserByMobile(String mobileNumber) {
         return userEntityRepository.findFirstByMobileNumber(mobileNumber);
@@ -31,6 +34,7 @@ public class UserEntityServiceImpl implements UserEntityService {
         if(existingUser != null) {
             throw new Exception("Mobile number already exists");
         }
+        user.setPin(passwordEncoder.encode(user.getPin()));
         user.setIsLocked(false);
         user.setIsActive(true);
         user.setTimestamp(LocalDateTime.now());
