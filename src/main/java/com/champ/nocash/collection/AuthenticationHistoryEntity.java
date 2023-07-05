@@ -7,6 +7,8 @@ import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.time.LocalDateTime;
+
 @Data
 @Builder
 @Document(collection = "authentication_history")
@@ -18,5 +20,6 @@ public class AuthenticationHistoryEntity {
     private AuthenticationType authenticationType;
     private String ipAddress;
     private String userAgent;
-    private Boolean authenticationResult;
+    private Boolean isAuthenticationResultSuccess;
+    private LocalDateTime creationTime;
 }
