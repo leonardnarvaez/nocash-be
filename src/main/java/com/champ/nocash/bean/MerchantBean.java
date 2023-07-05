@@ -11,5 +11,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class MerchantBean {
     private String merchantId;
+    private String imagePath;
     private String name;
 }
