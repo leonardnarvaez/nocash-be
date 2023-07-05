@@ -22,7 +22,7 @@ public class CustomUserDetailService implements UserDetailsService {
         UserEntity userEntity = userEntityRepository.findFirstByMobileNumber(username);
         System.out.println(userEntity);
         if(userEntity != null) {
-            if(!userEntity.getIsActive() || userEntity.getIsLocked()) {
+            if(!userEntity.getIsActive()) {
                 throw new UsernameNotFoundException("account is not active");
             }
             User authUser = new User(

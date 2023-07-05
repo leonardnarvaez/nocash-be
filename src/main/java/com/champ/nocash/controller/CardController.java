@@ -24,7 +24,7 @@ public class CardController {
     @Autowired
     private SecurityUtil securityUtil;
 
-    @PostMapping("/create")
+    @PostMapping("/")
     public ResponseEntity<?> saveCard(@RequestBody CardBean cardBean) {
         if (!cardBean.isAccountNumberValid() && !cardBean.isCvvValid()) {
             return new ResponseEntity(ErrorResponse.builder()
@@ -53,7 +53,7 @@ public class CardController {
             return ResponseEntity.ok(newCard);
         }
 
-    @GetMapping("/all")
+    @GetMapping("/")
     public List<CardEntity> getCardsForCurrentUser() {
         return cardEntityService.findAllCards();
     }

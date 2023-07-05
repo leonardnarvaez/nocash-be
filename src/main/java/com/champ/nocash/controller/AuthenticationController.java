@@ -22,6 +22,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -43,47 +44,26 @@ public class AuthenticationController {
     private SecurityUtil securityUtil;
     @PostMapping("/authenticate")
     public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest) throws Exception {
-        UserEntity userEntity = userEntityService.findUserByMobile(authenticationRequest.getMobileNumber());
+        AuthenticationResponse authenticationResponse = null;
         try {
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authenticationRequest.getMobileNumber(), authenticationRequest.getPin()));
-        } catch (BadCredentialsException e) {
-            if(userEntity != null) {
-                // the user exists but the provided pin is incorrect
-                AuthenticationHistoryEntity authenticationHistoryEntity = AuthenticationHistoryEntity.builder()
-                        .userId(userEntity.getId())
-                        .isAuthenticationResultSuccess(false)
-                        .authenticationType(AuthenticationType.LOGIN)
-                        .build();
-                authenticationHistoryService.save(authenticationHistoryEntity);
-            }
+            authenticationResponse = userEntityService.login(authenticationRequest);
+        } catch (BadCredentialsException badCredentialsException) {
             return new ResponseEntity(ErrorResponse.builder()
                     .error("Not Found")
-                    .message("User not found")
+                    .message(badCredentialsException.getMessage())
                     .status(404)
                     .path("/authentication/authenticate")
                     .build(), HttpStatus.BAD_REQUEST);
+        } catch (Exception exception) {
+            return new ResponseEntity(ErrorResponse.builder()
+                    .error("Internal Error")
+                    .message("You've done goof")
+                    .status(500)
+                    .path("/authentication/authenticate")
+                    .build(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        if(userEntity != null) {
-            // the user exists and the pin is correct
-            AuthenticationHistoryEntity authenticationHistoryEntity = AuthenticationHistoryEntity.builder()
-                    .userId(userEntity.getId())
-                    .isAuthenticationResultSuccess(true)
-                    .authenticationType(AuthenticationType.LOGIN)
-                    .build();
-            authenticationHistoryService.save(authenticationHistoryEntity);
-        }
-        final UserDetails userDetails = customUserDetailService.loadUserByUsername(authenticationRequest.getMobileNumber());
-        final String jwt = jwtUtil.generateToken(userDetails);
-        return ResponseEntity.ok(
-                AuthenticationResponse.builder()
-                        .firstName("Jon")
-                        .lastName("Narva")
-                        .emailAddress(userEntity.getEmailAddress())
-                        .mobileNumber(userEntity.getMobileNumber())
-                        .jwt(jwt)
-                        .userID(userEntity.getId())
-                        .build()
-        );
+
+        return ResponseEntity.ok(authenticationResponse);
     }
 
     @GetMapping("/logout")

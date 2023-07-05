@@ -9,8 +9,6 @@ import java.time.LocalDateTime;
 
 @Data
 @Builder
-@Document(collection = "cards")
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class CardEntity {
     @Id
     private String id;
