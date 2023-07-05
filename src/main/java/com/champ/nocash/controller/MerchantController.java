@@ -18,11 +18,12 @@ public class MerchantController {
     @Autowired
     private MerchantEntityService merchantEntityService;
 
-    @PostMapping("/create")
+    @PostMapping("/")
     public ResponseEntity<?> save(@RequestBody MerchantBean merchantBean) throws Exception {
         MerchantEntity merchant = MerchantEntity.builder()
                 .merchantId(merchantBean.getMerchantId())
                 .name(merchantBean.getName())
+                .imagePath(merchantBean.getImagePath())
                 .build();
         MerchantEntity newMerchantEntity = null;
         try {
@@ -53,7 +54,7 @@ public class MerchantController {
         }
     }
 
-    @GetMapping("/all")
+    @GetMapping("/")
     public ResponseEntity<?> findAll() throws Exception {
         return ResponseEntity.ok(merchantEntityService.findAll());
     }

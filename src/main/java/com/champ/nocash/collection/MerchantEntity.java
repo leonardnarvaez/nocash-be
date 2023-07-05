@@ -17,6 +17,6 @@ public class MerchantEntity {
     private String id;
     private String merchantId;
     private String name;
-//    private String imagePath;
+    private String imagePath;
     private LocalDateTime createdAt;
 }
