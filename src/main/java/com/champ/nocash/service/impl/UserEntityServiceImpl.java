@@ -40,4 +40,9 @@ public class UserEntityServiceImpl implements UserEntityService {
         user.setTimestamp(LocalDateTime.now());
         return userEntityRepository.save(user);
     }
+
+    @Override
+    public UserEntity updateUser(UserEntity user) throws Exception {
+        return userEntityRepository.save(user);
+    }
 }

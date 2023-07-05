@@ -6,4 +6,5 @@ public interface UserEntityService {
     UserEntity findUserByMobile(String mobileNumber);
     UserEntity findUserByEmail(String email);
     UserEntity save(UserEntity user) throws Exception;
+    UserEntity updateUser(UserEntity user) throws Exception;
 }
