@@ -14,11 +14,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/transaction")
 public class TransactionHistoryController {
     @Autowired
     private TransactionHistoryEntityService transactionHistoryEntityService;
-    @PostMapping("/transaction")
+    @PostMapping("/create")
     public ResponseEntity<?> save(@RequestBody TransactionHistoryBean transactionHistoryBean) throws Exception {
         TransactionType type;
         if(transactionHistoryBean.getTransactionType().equals("CREDIT")) {
