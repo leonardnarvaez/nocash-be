@@ -38,6 +38,7 @@ public class CardController {
                     .accountNumber(cardBean.getAccountNumber())
                     .expiryDate(cardBean.getExpiryDate())
                     .cvv(cardBean.getCvv())
+                    .name(cardBean.getName())
                     .build();
             CardEntity newCard = null;
             try {
