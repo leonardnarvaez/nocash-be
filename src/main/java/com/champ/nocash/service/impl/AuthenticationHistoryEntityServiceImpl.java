@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class AuthenticationHistoryEntityServiceImpl implements AuthenticationHistoryService {
@@ -24,5 +25,10 @@ public class AuthenticationHistoryEntityServiceImpl implements AuthenticationHis
         authenticationHistoryEntity.setUserAgent("chrome windows 10");
         authenticationHistoryEntity.setCreationTime(LocalDateTime.now());
         return authenticationHistoryRepository.save(authenticationHistoryEntity);
+    }
+
+    @Override
+    public List<AuthenticationHistoryEntity> findAll() {
+        return authenticationHistoryRepository.findByUserId(securityUtil.getUserEntity().getId());
     }
 }
