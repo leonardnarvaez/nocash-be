@@ -26,4 +26,5 @@ public class UserEntity {
     private LocalDateTime lastLoginDate;
     private List<CardEntity> cards;
     private LoginCounter loginCounter;
+    private Wallet wallet;
 }

@@ -10,10 +10,7 @@ import com.champ.nocash.util.NumberGeneratorUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 @Service
 public class CardEntityServiceImpl implements CardEntityService {
@@ -49,6 +46,24 @@ public class CardEntityServiceImpl implements CardEntityService {
             throw new NoSuchElementException("User not found");
         }
     }
+
+    @Override
+    public CardEntity findCardById(String id) {
+        UserEntity user = securityUtil.getUserEntity();
+        if (user != null) {
+            List<CardEntity> cards = user.getCards();
+            if (cards != null) {
+                Optional<CardEntity> retrievedCard = cards.stream().filter(card -> card.getId().equals(id)).findFirst();
+                if (retrievedCard.isPresent()) {
+                    return retrievedCard.get();
+                }
+            }
+        } else {
+            throw new NoSuchElementException("User not found");
+        }
+        throw new NoSuchElementException("Card not found");
+    }
+
 
     @Override
     public void deleteCard(String id) {

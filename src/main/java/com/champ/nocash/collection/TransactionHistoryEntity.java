@@ -7,6 +7,7 @@ import lombok.Data;
 import nonapi.io.github.classgraph.json.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
@@ -17,7 +18,7 @@ public class TransactionHistoryEntity {
     @Id
     private String id;
     private String userId;
-    private Float amount;
+    private BigDecimal amount;
     private TransactionType transactionType;
     private String payee;
     private String referenceNumber;

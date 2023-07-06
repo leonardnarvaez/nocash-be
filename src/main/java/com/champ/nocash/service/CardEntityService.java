@@ -9,5 +9,7 @@ public interface CardEntityService {
 
     List<CardEntity> findAllCards();
 
+    CardEntity findCardById(String id);
+
     void deleteCard(String id);
 }

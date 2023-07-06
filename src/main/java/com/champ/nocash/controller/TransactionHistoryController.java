@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.math.BigDecimal;
+
 @RestController
 @RequestMapping("/api/transaction")
 public class TransactionHistoryController {
@@ -21,13 +23,13 @@ public class TransactionHistoryController {
     @PostMapping("/create")
     public ResponseEntity<?> save(@RequestBody TransactionHistoryBean transactionHistoryBean) throws Exception {
         TransactionType type;
-        if(transactionHistoryBean.getTransactionType().equals("CREDIT")) {
-            type = TransactionType.CREDIT;
+        if(transactionHistoryBean.getTransactionType().equals("CASH_OUT")) {
+            type = TransactionType.CASH_OUT;
         } else {
-            type = TransactionType.DEBIT;
+            type = TransactionType.CASH_IN;
         }
         TransactionHistoryEntity transactionHistory = TransactionHistoryEntity.builder()
-                .amount(transactionHistoryBean.getAmount())
+                .amount(BigDecimal.valueOf(transactionHistoryBean.getAmount()))
                 .transactionType(type)
                 .payee(transactionHistoryBean.getPayee())
                 .build();

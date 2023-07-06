@@ -3,6 +3,7 @@ package com.champ.nocash.service.impl;
 import com.champ.nocash.collection.AuthenticationHistoryEntity;
 import com.champ.nocash.collection.LoginCounter;
 import com.champ.nocash.collection.UserEntity;
+import com.champ.nocash.collection.Wallet;
 import com.champ.nocash.enums.AuthenticationType;
 import com.champ.nocash.repository.UserEntityRepository;
 import com.champ.nocash.request.AuthenticationRequest;
@@ -65,6 +66,7 @@ public class UserEntityServiceImpl implements UserEntityService {
         user.setTimestamp(LocalDateTime.now());
         user.setCards(new ArrayList<>());
         user.setLoginCounter(new LoginCounter());
+        user.setWallet(new Wallet());
         return userEntityRepository.save(user);
     }
 
