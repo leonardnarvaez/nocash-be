@@ -2,12 +2,10 @@ package com.champ.nocash.controller;
 
 import com.champ.nocash.bean.CardTransactionBean;
 import com.champ.nocash.service.CardTransactionService;
+import com.champ.nocash.service.WalletTransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -16,6 +14,8 @@ import java.util.HashMap;
 @RequestMapping("/api/card-transaction")
 public class CardTransactionController {
 
+    @Autowired
+    private WalletTransactionService walletTransactionService;
     @Autowired
     private CardTransactionService cardTransactionService;
 
@@ -45,5 +45,10 @@ public class CardTransactionController {
                 put("message", "transaction failed");
             }});
         }
+    }
+
+    @GetMapping("/balance")
+    public ResponseEntity<?> getBalance() {
+        return ResponseEntity.ok(walletTransactionService.getBalance());
     }
 }

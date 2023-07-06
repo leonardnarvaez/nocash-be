@@ -69,4 +69,12 @@ public class WalletTransactionServiceImpl implements WalletTransactionService {
         }
         return true;
     }
+
+    @Override
+    public BigDecimal getBalance() {
+        UserEntity currentUser = securityUtil.getUserEntity();
+        return currentUser.getWallet().getBalance();
+    }
+
+
 }
