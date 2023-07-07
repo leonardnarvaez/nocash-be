@@ -15,6 +15,9 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.smartcardio.Card;
 import java.util.List;
+import java.util.Random;
+
+import static com.champ.nocash.util.ColorGeneratorUtil.getRandomColor;
 
 @RestController
 @RequestMapping("/api/card")
@@ -39,6 +42,7 @@ public class CardController {
                     .expiryDate(cardBean.getExpiryDate())
                     .cvv(cardBean.getCvv())
                     .name(cardBean.getName())
+                    .color(getRandomColor())
                     .build();
             CardEntity newCard = null;
             try {

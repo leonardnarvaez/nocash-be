@@ -17,4 +17,5 @@ public class CardEntity {
     private String expiryDate;
     private String cvv;
     private LocalDateTime createdDate;
+    private String color;
 }

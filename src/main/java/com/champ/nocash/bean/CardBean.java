@@ -15,6 +15,7 @@ public class CardBean {
     private String cvv;
     private String name;
 
+
     public boolean isAccountNumberValid() {
         if (this.accountNumber.length() == 12) {
             return true;
