@@ -1,6 +1,9 @@
 package com.champ.nocash.controller;
 
+import com.champ.nocash.bean.EmailVerificationRequestBean;
+import com.champ.nocash.bean.ReactivateAccountBean;
 import com.champ.nocash.bean.RegisterBean;
+import com.champ.nocash.bean.VerifyEmailBean;
 import com.champ.nocash.collection.AuthenticationHistoryEntity;
 import com.champ.nocash.collection.UserEntity;
 import com.champ.nocash.enums.AuthenticationType;
@@ -11,21 +14,17 @@ import com.champ.nocash.security.CustomUserDetailService;
 import com.champ.nocash.security.SecurityUtil;
 import com.champ.nocash.service.AuthenticationHistoryService;
 import com.champ.nocash.service.UserEntityService;
+import com.champ.nocash.service.VerificationService;
 import com.champ.nocash.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 
 @RestController
 @RequestMapping("/authentication")
@@ -42,6 +41,8 @@ public class AuthenticationController {
     private UserEntityService userEntityService;
     @Autowired
     private SecurityUtil securityUtil;
+    @Autowired
+    private VerificationService verificationService;
     @PostMapping("/authenticate")
     public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest) throws Exception {
         AuthenticationResponse authenticationResponse = null;
@@ -81,7 +82,7 @@ public class AuthenticationController {
                 put("message", "logout success");
             }});
         } else {
-            return ResponseEntity.badRequest().body(new HashMap<String, String>(){{
+            return ResponseEntity.ok(new HashMap<String, String>(){{
                 put("error", "not logged-in");
             }});
         }
@@ -112,7 +113,79 @@ public class AuthenticationController {
                     .path("/authentication/authenticate")
                     .build(), HttpStatus.BAD_REQUEST);
         }
+        verificationService.requestEmailVerification(user.getEmailAddress());
         return ResponseEntity.ok(newUser);
+    }
+
+    @PostMapping("/request-email-verification")
+    public ResponseEntity<?> verifyEmail(@RequestBody EmailVerificationRequestBean emailVerificationBean) {
+        try {
+            verificationService.requestEmailVerification(emailVerificationBean.getEmail());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity(ErrorResponse.builder()
+                    .error("Bad Request")
+                    .message(e.getMessage())
+                    .status(401)
+                    .path("/authentication/authenticate")
+                    .build(), HttpStatus.BAD_REQUEST);
+        }
+        return ResponseEntity.ok(new HashMap<String, String>(){{
+            put("message", "verification email has been sent");
+        }});
+    }
+    @PostMapping("/request-account-reactivation")
+    public ResponseEntity<?> reactivateAccount(@RequestBody EmailVerificationRequestBean emailVerificationBean) {
+        try {
+            verificationService.requestAccountReactivation(emailVerificationBean.getEmail());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity(ErrorResponse.builder()
+                    .error("Bad Request")
+                    .message(e.getMessage())
+                    .status(401)
+                    .path("/authentication/authenticate")
+                    .build(), HttpStatus.BAD_REQUEST);
+        }
+        return ResponseEntity.ok(new HashMap<String, String>(){{
+            put("message", "reactivation email has been sent");
+        }});
+    }
+
+    @PostMapping("/verify-email")
+    public ResponseEntity<?> verifyEmail(@RequestBody VerifyEmailBean verifyEmailBean) {
+        try {
+            verificationService.verifyEmail(verifyEmailBean.getEmail(), verifyEmailBean.getCode());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity(ErrorResponse.builder()
+                    .error("Bad Request")
+                    .message(e.getMessage())
+                    .status(401)
+                    .path("/authentication/authenticate")
+                    .build(), HttpStatus.BAD_REQUEST);
+        }
+        return ResponseEntity.ok(new HashMap<String, String>(){{
+            put("message", "email successfully verified");
+        }});
+    }
+
+    @PostMapping("/reactivate-account")
+    public ResponseEntity<?> reactivateAccount(@RequestBody ReactivateAccountBean reactivateAccountBean) {
+        try {
+            verificationService.reactivateAccount(reactivateAccountBean.getEmail(), reactivateAccountBean.getCode(), reactivateAccountBean.getNewPIN());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity(ErrorResponse.builder()
+                    .error("Bad Request")
+                    .message(e.getMessage())
+                    .status(401)
+                    .path("/authentication/authenticate")
+                    .build(), HttpStatus.BAD_REQUEST);
+        }
+        return ResponseEntity.ok(new HashMap<String, String>(){{
+            put("message", "account successfully reactivated");
+        }});
     }
 
     @GetMapping("/test")

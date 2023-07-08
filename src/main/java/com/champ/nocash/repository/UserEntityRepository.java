@@ -1,7 +1,9 @@
 package com.champ.nocash.repository;
 
 import com.champ.nocash.collection.UserEntity;
+import com.champ.nocash.collection.Verification;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 
 @Repository

@@ -17,7 +17,9 @@ public class SecurityUtil {
     public UserEntity getUserEntity() {
         return userEntityRepository.findFirstByMobileNumber(getSessionUser());
     }
-
+    public String getUserId() {
+        return getUserEntity().getId();
+    }
     public static String getSessionUser() {
         Authentication authentication  = SecurityContextHolder.getContext().getAuthentication();
         if (!(authentication instanceof AnonymousAuthenticationToken)) {

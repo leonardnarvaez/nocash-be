@@ -1,17 +1,17 @@
 package com.champ.nocash.service.impl;
 
-import com.champ.nocash.collection.AuthenticationHistoryEntity;
-import com.champ.nocash.collection.LoginCounter;
-import com.champ.nocash.collection.UserEntity;
-import com.champ.nocash.collection.Wallet;
+import com.champ.nocash.collection.*;
 import com.champ.nocash.enums.AuthenticationType;
 import com.champ.nocash.repository.UserEntityRepository;
 import com.champ.nocash.request.AuthenticationRequest;
 import com.champ.nocash.response.AuthenticationResponse;
 import com.champ.nocash.response.ErrorResponse;
 import com.champ.nocash.security.CustomUserDetailService;
+import com.champ.nocash.security.SecurityUtil;
 import com.champ.nocash.service.AuthenticationHistoryService;
 import com.champ.nocash.service.UserEntityService;
+import com.champ.nocash.util.EmailMessageProvider;
+import com.champ.nocash.util.EmailService;
 import com.champ.nocash.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,11 +20,13 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Optional;
 
 @Service
 public class UserEntityServiceImpl implements UserEntityService {
@@ -40,6 +42,10 @@ public class UserEntityServiceImpl implements UserEntityService {
     private JwtUtil jwtUtil;
     @Autowired
     private AuthenticationHistoryService authenticationHistoryService;
+    @Autowired
+    private EmailService emailService;
+    @Autowired
+    private SecurityUtil securityUtil;
     @Override
     public UserEntity findUserByMobile(String mobileNumber) {
         return userEntityRepository.findFirstByMobileNumber(mobileNumber);
@@ -62,11 +68,12 @@ public class UserEntityServiceImpl implements UserEntityService {
         }
         user.setPin(passwordEncoder.encode(user.getPin()));
         user.setIsLocked(false);
-        user.setIsActive(true);
+        user.setIsActive(false);
         user.setTimestamp(LocalDateTime.now());
         user.setCards(new ArrayList<>());
         user.setLoginCounter(new LoginCounter());
         user.setWallet(new Wallet());
+        user.setVerification(Verification.generateAccountReactivation());
         return userEntityRepository.save(user);
     }
 
@@ -90,10 +97,23 @@ public class UserEntityServiceImpl implements UserEntityService {
                         .build();
                 authenticationHistoryService.save(authenticationHistoryEntity);
                 userEntity.getLoginCounter().increment();
-                if(!userEntity.getLoginCounter().isValid()) {
+                if(!userEntity.getLoginCounter().isValid() && !userEntity.getIsLocked()) {
                     userEntity.setIsLocked(true);
+                    AuthenticationHistoryEntity lock = AuthenticationHistoryEntity.builder()
+                            .userId(userEntity.getId())
+                            .isAuthenticationResultSuccess(true)
+                            .authenticationType(AuthenticationType.ACCOUNT_LOCK)
+                            .build();
+                    authenticationHistoryService.save(lock);
+                    emailService.sendMIMEMessage(
+                            userEntity.getEmailAddress(),
+                            "Account Locked",
+                            EmailMessageProvider.getAccountLockMessage("Jon narva", "192.168.0.69", "windows 10 chrome", LocalDateTime.now()));
                 }
                 updateUser(userEntity);
+                if(userEntity.getIsLocked()) {
+                    throw new BadCredentialsException("Your account has been locked");
+                }
             }
             throw new BadCredentialsException("hindi legit si boss");
         }
@@ -107,7 +127,7 @@ public class UserEntityServiceImpl implements UserEntityService {
             authenticationHistoryService.save(authenticationHistoryEntity);
         }
         if(userEntity.getIsLocked()) {
-            throw new BadCredentialsException("Your account is now locked");
+            throw new BadCredentialsException("Your account has been locked");
         }
         // update the last login time of user
         userEntity.setLastLoginDate(LocalDateTime.now());
@@ -124,4 +144,21 @@ public class UserEntityServiceImpl implements UserEntityService {
                 .userID(userEntity.getId())
                 .build();
     }
+
+    @Override
+    public Optional<UserEntity> findUserById(String userId) {
+        return userEntityRepository.findById(userId);
+    }
+
+    @Override
+    public void updatePIN(String oldPIN, String newPIN) throws Exception {
+        UserEntity user = securityUtil.getUserEntity();
+        String hashedUserPassword = user.getPin();
+        if(!passwordEncoder.matches(oldPIN, hashedUserPassword)) {
+            throw new Exception("The PIN you provided does not much your account PIN");
+        }
+        user.setPin(passwordEncoder.encode(newPIN));
+        updateUser(user);
+    }
+
 }

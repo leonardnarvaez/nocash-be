@@ -27,4 +27,5 @@ public class UserEntity {
     private List<CardEntity> cards;
     private LoginCounter loginCounter;
     private Wallet wallet;
+    private Verification verification;
 }

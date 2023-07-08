@@ -4,6 +4,8 @@ import com.champ.nocash.collection.UserEntity;
 import com.champ.nocash.request.AuthenticationRequest;
 import com.champ.nocash.response.AuthenticationResponse;
 
+import java.util.Optional;
+
 public interface UserEntityService {
     UserEntity findUserByMobile(String mobileNumber);
     UserEntity findUserByEmail(String email);
@@ -11,4 +13,6 @@ public interface UserEntityService {
     UserEntity updateUser(UserEntity user) throws Exception;
 
     AuthenticationResponse login(AuthenticationRequest authenticationRequest) throws Exception;
+    Optional<UserEntity> findUserById(String userId);
+    void updatePIN(String oldPIN, String newPIN) throws Exception;
 }

@@ -20,7 +20,6 @@ public class CustomUserDetailService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         UserEntity userEntity = userEntityRepository.findFirstByMobileNumber(username);
-        System.out.println(userEntity);
         if(userEntity != null) {
             if(!userEntity.getIsActive()) {
                 throw new UsernameNotFoundException("account is not active");
@@ -34,5 +33,9 @@ public class CustomUserDetailService implements UserDetailsService {
         } else {
             throw new UsernameNotFoundException("Invalid mobile number or pin");
         }
+    }
+    public boolean isUserAccountLocked(String username) {
+        UserEntity userEntity = userEntityRepository.findFirstByMobileNumber(username);
+        return userEntity.getIsLocked();
     }
 }

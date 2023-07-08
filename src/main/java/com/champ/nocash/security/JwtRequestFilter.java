@@ -1,5 +1,7 @@
 package com.champ.nocash.security;
 
+import com.champ.nocash.collection.UserEntity;
+import com.champ.nocash.service.UserEntityService;
 import com.champ.nocash.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -35,7 +37,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
         if(username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = customUserDetailService.loadUserByUsername(username);
-            if(jwtUtil.validateToken(jwt, userDetails)) {
+            if(jwtUtil.validateToken(jwt, userDetails) && !customUserDetailService.isUserAccountLocked(username)) {
                 UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
