@@ -24,6 +24,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 
 @RestController
@@ -44,10 +45,10 @@ public class AuthenticationController {
     @Autowired
     private VerificationService verificationService;
     @PostMapping("/authenticate")
-    public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest) throws Exception {
+    public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest, HttpServletRequest httpServletRequest) throws Exception {
         AuthenticationResponse authenticationResponse = null;
         try {
-            authenticationResponse = userEntityService.login(authenticationRequest);
+            authenticationResponse = userEntityService.login(authenticationRequest, httpServletRequest.getRemoteAddr(), httpServletRequest.getHeader("User-Agent"));
         } catch (BadCredentialsException badCredentialsException) {
             return new ResponseEntity(ErrorResponse.builder()
                     .error("Not Found")
@@ -68,7 +69,7 @@ public class AuthenticationController {
     }
 
     @GetMapping("/logout")
-    public ResponseEntity<?> logout() throws Exception {
+    public ResponseEntity<?> logout(HttpServletRequest httpServletRequest) throws Exception {
         UserEntity loggedInUser = securityUtil.getUserEntity();
         if(loggedInUser != null) {
             // there is a logged in user
@@ -76,6 +77,8 @@ public class AuthenticationController {
                     .userId(loggedInUser.getId())
                     .isAuthenticationResultSuccess(true)
                     .authenticationType(AuthenticationType.LOGOUT)
+                    .userAgent(httpServletRequest.getHeader("User-Agent"))
+                    .ipAddress(httpServletRequest.getRemoteAddr())
                     .build();
             authenticationHistoryService.save(authenticationHistoryEntity);
             return ResponseEntity.ok(new HashMap<String, String>(){{
@@ -171,9 +174,9 @@ public class AuthenticationController {
     }
 
     @PostMapping("/reactivate-account")
-    public ResponseEntity<?> reactivateAccount(@RequestBody ReactivateAccountBean reactivateAccountBean) {
+    public ResponseEntity<?> reactivateAccount(@RequestBody ReactivateAccountBean reactivateAccountBean, HttpServletRequest httpServletRequest) {
         try {
-            verificationService.reactivateAccount(reactivateAccountBean.getEmail(), reactivateAccountBean.getCode(), reactivateAccountBean.getNewPIN());
+            verificationService.reactivateAccount(reactivateAccountBean.getEmail(), reactivateAccountBean.getCode(), reactivateAccountBean.getNewPIN(), httpServletRequest.getRemoteAddr(), httpServletRequest.getHeader("User-Agent"));
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity(ErrorResponse.builder()

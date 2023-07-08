@@ -21,8 +21,6 @@ public class AuthenticationHistoryEntityServiceImpl implements AuthenticationHis
 
     @Override
     public AuthenticationHistoryEntity save(AuthenticationHistoryEntity authenticationHistoryEntity) throws Exception {
-        authenticationHistoryEntity.setIpAddress("192.168.0.69");
-        authenticationHistoryEntity.setUserAgent("chrome windows 10");
         authenticationHistoryEntity.setCreationTime(LocalDateTime.now());
         return authenticationHistoryRepository.save(authenticationHistoryEntity);
     }

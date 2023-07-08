@@ -112,7 +112,7 @@ public class VerificationServiceImpl implements VerificationService {
     }
 
     @Override
-    public boolean reactivateAccount(String email, String code, String newPin) throws Exception {
+    public boolean reactivateAccount(String email, String code, String newPin, String ipAddress, String userAgent) throws Exception {
         UserEntity userEntity = userEntityService.findUserByEmail(email);
         if(userEntity == null) {
             throw new UsernameNotFoundException(String.format("User with email %s is not found", email));
@@ -140,6 +140,8 @@ public class VerificationServiceImpl implements VerificationService {
         AuthenticationHistoryEntity reactivate = AuthenticationHistoryEntity.builder()
                 .userId(userEntity.getId())
                 .isAuthenticationResultSuccess(true)
+                .userAgent(userAgent)
+                .ipAddress(ipAddress)
                 .authenticationType(AuthenticationType.ACCOUNT_REACTIVATION)
                 .build();
         authenticationHistoryService.save(reactivate);

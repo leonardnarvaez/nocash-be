@@ -83,7 +83,7 @@ public class UserEntityServiceImpl implements UserEntityService {
     }
 
     @Override
-    public AuthenticationResponse login(AuthenticationRequest authenticationRequest) throws Exception {
+    public AuthenticationResponse login(AuthenticationRequest authenticationRequest, String ipAddress, String userAgent) throws Exception {
         UserEntity userEntity = findUserByMobile(authenticationRequest.getMobileNumber());
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authenticationRequest.getMobileNumber(), authenticationRequest.getPin()));
@@ -92,6 +92,8 @@ public class UserEntityServiceImpl implements UserEntityService {
                 // the user exists but the provided pin is incorrect
                 AuthenticationHistoryEntity authenticationHistoryEntity = AuthenticationHistoryEntity.builder()
                         .userId(userEntity.getId())
+                        .userAgent(userAgent)
+                        .ipAddress(ipAddress)
                         .isAuthenticationResultSuccess(false)
                         .authenticationType(AuthenticationType.LOGIN)
                         .build();
@@ -101,6 +103,8 @@ public class UserEntityServiceImpl implements UserEntityService {
                     userEntity.setIsLocked(true);
                     AuthenticationHistoryEntity lock = AuthenticationHistoryEntity.builder()
                             .userId(userEntity.getId())
+                            .userAgent(userAgent)
+                            .ipAddress(ipAddress)
                             .isAuthenticationResultSuccess(true)
                             .authenticationType(AuthenticationType.ACCOUNT_LOCK)
                             .build();
@@ -121,6 +125,8 @@ public class UserEntityServiceImpl implements UserEntityService {
             // the user exists and the pin is correct
             AuthenticationHistoryEntity authenticationHistoryEntity = AuthenticationHistoryEntity.builder()
                     .userId(userEntity.getId())
+                    .userAgent(userAgent)
+                    .ipAddress(ipAddress)
                     .isAuthenticationResultSuccess(true)
                     .authenticationType(AuthenticationType.LOGIN)
                     .build();

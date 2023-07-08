@@ -12,7 +12,7 @@ public interface UserEntityService {
     UserEntity save(UserEntity user) throws Exception;
     UserEntity updateUser(UserEntity user) throws Exception;
 
-    AuthenticationResponse login(AuthenticationRequest authenticationRequest) throws Exception;
+    AuthenticationResponse login(AuthenticationRequest authenticationRequest, String ipAddress, String userAgent) throws Exception;
     Optional<UserEntity> findUserById(String userId);
     void updatePIN(String oldPIN, String newPIN) throws Exception;
 }
