@@ -25,6 +25,14 @@ public class JwtUtil {
         return extractClaim(token, Claims::getExpiration);
     }
 
+    public String extractIPAddress(String token) {
+        return extractAllClaims(token).get("ipAddress", String.class);
+    }
+
+    public String extractUserAgent(String token) {
+        return extractAllClaims(token).get("userAgent", String.class);
+    }
+
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
@@ -38,9 +46,11 @@ public class JwtUtil {
         return extractExpiration(token).before(new Date());
     }
 
-    public String generateToken(UserDetails userDetails) {
+    public String generateToken(UserDetails userDetails, String ipAddress, String userAgent) {
         System.out.println(SECRET_KEY);
         Map<String, Object> claims = new HashMap<>();
+        claims.put("ipAddress", ipAddress);
+        claims.put("userAgent", userAgent);
         return  createToken(claims, userDetails.getUsername());
     }
 
@@ -50,8 +60,10 @@ public class JwtUtil {
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY).compact();
     }
 
-    public boolean validateToken(String token, UserDetails userDetails) {
+    public boolean validateToken(String token, UserDetails userDetails, String ipAddress, String userAgent) {
         final String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+        final String extractedIPAddress = extractIPAddress(token);
+        final String extractedUserAgent = extractUserAgent(token);
+        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token) && extractedUserAgent.equals(userAgent) && extractedIPAddress.equals(ipAddress));
     }
 }

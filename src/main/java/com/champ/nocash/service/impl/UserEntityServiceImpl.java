@@ -140,7 +140,7 @@ public class UserEntityServiceImpl implements UserEntityService {
         userEntity.getLoginCounter().reset();
         updateUser(userEntity);
         final UserDetails userDetails = customUserDetailService.loadUserByUsername(authenticationRequest.getMobileNumber());
-        final String jwt = jwtUtil.generateToken(userDetails);
+        final String jwt = jwtUtil.generateToken(userDetails, ipAddress, userAgent);
         return AuthenticationResponse.builder()
                 .firstName("Jon")
                 .lastName("Narva")
