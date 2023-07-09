@@ -2,7 +2,6 @@ package com.champ.nocash.security;
 
 import com.champ.nocash.collection.UserEntity;
 import com.champ.nocash.repository.UserEntityRepository;
-import com.champ.nocash.service.UserEntityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -24,12 +23,12 @@ public class CustomUserDetailService implements UserDetailsService {
             if(!userEntity.getIsActive()) {
                 throw new UsernameNotFoundException("account is not active");
             }
-            User authUser = new User(
+            return new CustomUser(
                     userEntity.getMobileNumber(),
                     userEntity.getPin(),
-                    Arrays.asList(new SimpleGrantedAuthority("USER"))
+                    Arrays.asList(new SimpleGrantedAuthority("USER")),
+                    userEntity.getId()
             );
-            return authUser;
         } else {
             throw new UsernameNotFoundException("Invalid mobile number or pin");
         }

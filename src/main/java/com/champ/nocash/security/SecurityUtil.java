@@ -17,8 +17,13 @@ public class SecurityUtil {
     public UserEntity getUserEntity() {
         return userEntityRepository.findFirstByMobileNumber(getSessionUser());
     }
-    public String getUserId() {
-        return getUserEntity().getId();
+    public static String getUserId() {
+        Authentication authentication  = SecurityContextHolder.getContext().getAuthentication();
+        if (!(authentication instanceof AnonymousAuthenticationToken)) {
+            CustomUser currentUser = (CustomUser) authentication.getPrincipal();
+            return currentUser.getUserId();
+        }
+        return null;
     }
     public static String getSessionUser() {
         Authentication authentication  = SecurityContextHolder.getContext().getAuthentication();
@@ -28,4 +33,6 @@ public class SecurityUtil {
         }
         return null;
     }
+
+
 }
