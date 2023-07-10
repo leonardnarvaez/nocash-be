@@ -112,7 +112,7 @@ public class UserEntityServiceImpl implements UserEntityService {
                     emailService.sendMIMEMessage(
                             userEntity.getEmailAddress(),
                             "Account Locked",
-                            EmailMessageProvider.getAccountLockMessage("Jon narva", "192.168.0.69", "windows 10 chrome", LocalDateTime.now()));
+                            EmailMessageProvider.getAccountLockMessage("Jon narva", ipAddress, userAgent, LocalDateTime.now()));
                 }
                 updateUser(userEntity);
                 if(userEntity.getIsLocked()) {
