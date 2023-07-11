@@ -11,6 +11,9 @@ public class Wallet {
         balance = balance.add(amount);
     }
     public void withdraw(BigDecimal amount) {
+        if (amount.compareTo(balance) >= 1) {
+            throw new IllegalArgumentException("Insufficient Funds");
+        }
         balance = balance.subtract(amount);
     }
 

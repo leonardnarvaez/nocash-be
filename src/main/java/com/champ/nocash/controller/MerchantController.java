@@ -67,17 +67,20 @@ public class MerchantController {
     }
 
     @PostMapping("/payment")
-    public ResponseEntity<?> pay(@RequestBody BillPaymentBean billPaymentBean) throws Exception {
-        boolean isSuccess = billPaymentService.payBill(BigDecimal.valueOf(billPaymentBean.getAmount()), billPaymentBean.getMerchantId(), billPaymentBean.getAccountNumber());
-        if (isSuccess) {
-            return ResponseEntity.ok(new HashMap<String, String>(){{
-                put("message", "transaction complete");
-            }});
-        } else {
-            return ResponseEntity.ok(new HashMap<String, String>(){{
-                put("message", "transaction failed");
-            }});
-        }
+    public ResponseEntity<?> pay(@RequestBody BillPaymentBean billPaymentBean) {
+            try {
+                billPaymentService.payBill(BigDecimal.valueOf(billPaymentBean.getAmount()), billPaymentBean.getMerchantId(), billPaymentBean.getAccountNumber());
+                return ResponseEntity.ok(new HashMap<String, String>(){{
+                    put("message", "transaction complete");
+                }});
+            } catch (Exception e) {
+                return new ResponseEntity(ErrorResponse.builder()
+                        .error("Bad Request")
+                        .message(e.getMessage())
+                        .status(401)
+                        .path("/authentication/authenticate")
+                        .build(), HttpStatus.BAD_REQUEST);
+            }
         }
     }
 

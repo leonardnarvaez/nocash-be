@@ -32,10 +32,10 @@ public class CardTransactionServiceImpl implements CardTransactionService {
     }
 
     @Override
-    public boolean cashOut(BigDecimal amount, String cardId, String pin) {
+    public boolean cashOut(BigDecimal amount, String cardId, String pin) throws Exception {
         if (userEntityService.validatePIN(pin)) {
             return walletTransactionService.withdraw(amount, TransactionType.CASH_OUT, cardEntityService.findCardById(cardId).getName(), "");
         }
-        return false;
+        throw new Exception("Invalid PIN");
     }
 }

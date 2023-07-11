@@ -48,27 +48,18 @@ public class WalletTransactionServiceImpl implements WalletTransactionService {
     }
 
     @Override
-    public boolean withdraw(BigDecimal amount, TransactionType transactionType, String payee, String accountNumber) {
+    public boolean withdraw(BigDecimal amount, TransactionType transactionType, String payee, String accountNumber) throws Exception {
         UserEntity currentUser = securityUtil.getUserEntity();
+
         currentUser.getWallet().withdraw(amount);
-        try {
-            userEntityService.updateUser(currentUser);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
+        userEntityService.updateUser(currentUser);
         TransactionHistoryEntity newTransaction = TransactionHistoryEntity.builder()
                 .amount(amount)
                 .transactionType(transactionType)
                 .payee(payee)
                 .accountNumber(accountNumber)
                 .build();
-        try {
-            transactionHistoryEntityService.save(newTransaction);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
+        transactionHistoryEntityService.save(newTransaction);
         return true;
     }
 

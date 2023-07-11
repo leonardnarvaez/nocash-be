@@ -39,16 +39,16 @@ public class CardTransactionController {
     }
 
     @PostMapping("/cash-out")
-    public ResponseEntity<?> cashOut(@RequestBody CardTransactionBean cardTransactionBean) throws Exception {
-        boolean isSuccess = cardTransactionService.cashOut(BigDecimal.valueOf(cardTransactionBean.getAmount()), cardTransactionBean.getCardId(), cardTransactionBean.getPin());
-        if (isSuccess) {
+    public ResponseEntity<?> cashOut(@RequestBody CardTransactionBean cardTransactionBean) {
+        try {
+            cardTransactionService.cashOut(BigDecimal.valueOf(cardTransactionBean.getAmount()), cardTransactionBean.getCardId(), cardTransactionBean.getPin());
             return ResponseEntity.ok(new HashMap<String, String>(){{
                 put("message", "transaction complete");
             }});
-        } else {
+        } catch (Exception e) {
             return new ResponseEntity(ErrorResponse.builder()
                     .error("Bad Request")
-                    .message("Transaction Failed")
+                    .message(e.getMessage())
                     .status(401)
                     .path("/authentication/authenticate")
                     .build(), HttpStatus.BAD_REQUEST);
