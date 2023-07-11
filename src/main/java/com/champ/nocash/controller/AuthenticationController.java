@@ -59,7 +59,7 @@ public class AuthenticationController {
         } catch (Exception exception) {
             return new ResponseEntity(ErrorResponse.builder()
                     .error("Internal Error")
-                    .message("You've done goof")
+                    .message("Invalid User Credentials")
                     .status(500)
                     .path("/authentication/authenticate")
                     .build(), HttpStatus.INTERNAL_SERVER_ERROR);
