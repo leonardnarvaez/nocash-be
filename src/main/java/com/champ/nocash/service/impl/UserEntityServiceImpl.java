@@ -167,4 +167,14 @@ public class UserEntityServiceImpl implements UserEntityService {
         updateUser(user);
     }
 
+    @Override
+    public boolean validatePIN(String pin) {
+        UserEntity user = securityUtil.getUserEntity();
+        String hashedUserPassword = user.getPin();
+        if(!passwordEncoder.matches(pin, hashedUserPassword)) {
+            return false;
+        }
+        return true;
+    }
+
 }

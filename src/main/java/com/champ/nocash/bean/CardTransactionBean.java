@@ -14,4 +14,5 @@ import java.math.BigDecimal;
 public class CardTransactionBean {
     private Double amount;
     private String cardId;
+    private String pin;
 }

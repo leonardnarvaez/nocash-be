@@ -3,10 +3,7 @@ package com.champ.nocash.service.impl;
 import com.champ.nocash.collection.TransactionHistoryEntity;
 import com.champ.nocash.collection.UserEntity;
 import com.champ.nocash.enums.TransactionType;
-import com.champ.nocash.service.CardEntityService;
-import com.champ.nocash.service.CardTransactionService;
-import com.champ.nocash.service.TransactionHistoryEntityService;
-import com.champ.nocash.service.WalletTransactionService;
+import com.champ.nocash.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,13 +20,22 @@ public class CardTransactionServiceImpl implements CardTransactionService {
     @Autowired
     CardEntityService cardEntityService;
 
+    @Autowired
+    UserEntityService userEntityService;
+
     @Override
-    public boolean cashIn(BigDecimal amount, String cardId) {
-       return walletTransactionService.deposit(amount, TransactionType.CASH_IN, cardEntityService.findCardById(cardId).getName(), "");
+    public boolean cashIn(BigDecimal amount, String cardId, String pin) {
+        if (userEntityService.validatePIN(pin)) {
+            return walletTransactionService.deposit(amount, TransactionType.CASH_IN, cardEntityService.findCardById(cardId).getName(), "");
+        }
+       return false;
     }
 
     @Override
-    public boolean cashOut(BigDecimal amount, String cardId) {
-        return walletTransactionService.withdraw(amount, TransactionType.CASH_OUT, cardEntityService.findCardById(cardId).getName(), "");
+    public boolean cashOut(BigDecimal amount, String cardId, String pin) {
+        if (userEntityService.validatePIN(pin)) {
+            return walletTransactionService.withdraw(amount, TransactionType.CASH_OUT, cardEntityService.findCardById(cardId).getName(), "");
+        }
+        return false;
     }
 }

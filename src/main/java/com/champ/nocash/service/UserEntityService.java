@@ -15,4 +15,6 @@ public interface UserEntityService {
     AuthenticationResponse login(AuthenticationRequest authenticationRequest, String ipAddress, String userAgent) throws Exception;
     Optional<UserEntity> findUserById(String userId);
     void updatePIN(String oldPIN, String newPIN) throws Exception;
+
+    boolean validatePIN(String pin);
 }
