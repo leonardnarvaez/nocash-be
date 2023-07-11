@@ -31,4 +31,8 @@ public class MerchantEntityServiceImpl implements MerchantEntityService {
         return merchantEntityRepository.findAll();
     }
 
+    @Override
+    public MerchantEntity findByMerchantId(String merchantId) {
+        return merchantEntityRepository.findByMerchantId(merchantId);
+    }
 }

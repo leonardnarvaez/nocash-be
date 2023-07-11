@@ -9,4 +9,6 @@ public interface MerchantEntityService {
     MerchantEntity save(MerchantEntity merchant) throws Exception;
     Optional<MerchantEntity> findById(String id);
     List<MerchantEntity> findAll() throws Exception;
+
+    MerchantEntity findByMerchantId(String merchantId);
 }

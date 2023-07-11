@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface MerchantEntityRepository extends MongoRepository<MerchantEntity, String> {
+    MerchantEntity findByMerchantId(String merchantId);
 }

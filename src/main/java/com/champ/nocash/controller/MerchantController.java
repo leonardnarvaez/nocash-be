@@ -1,14 +1,18 @@
 package com.champ.nocash.controller;
 
+import com.champ.nocash.bean.BillPaymentBean;
 import com.champ.nocash.bean.MerchantBean;
 import com.champ.nocash.collection.MerchantEntity;
 import com.champ.nocash.response.ErrorResponse;
+import com.champ.nocash.service.BillPaymentService;
 import com.champ.nocash.service.MerchantEntityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.Optional;
 
 @RestController
@@ -17,6 +21,9 @@ public class MerchantController {
 
     @Autowired
     private MerchantEntityService merchantEntityService;
+
+    @Autowired
+    private BillPaymentService billPaymentService;
 
     @PostMapping("/")
     public ResponseEntity<?> save(@RequestBody MerchantBean merchantBean) throws Exception {
@@ -59,4 +66,18 @@ public class MerchantController {
         return ResponseEntity.ok(merchantEntityService.findAll());
     }
 
-}
+    @PostMapping("/payment")
+    public ResponseEntity<?> pay(@RequestBody BillPaymentBean billPaymentBean) throws Exception {
+        boolean isSuccess = billPaymentService.payBill(BigDecimal.valueOf(billPaymentBean.getAmount()), billPaymentBean.getMerchantId(), billPaymentBean.getAccountNumber());
+        if (isSuccess) {
+            return ResponseEntity.ok(new HashMap<String, String>(){{
+                put("message", "transaction complete");
+            }});
+        } else {
+            return ResponseEntity.ok(new HashMap<String, String>(){{
+                put("message", "transaction failed");
+            }});
+        }
+        }
+    }
+

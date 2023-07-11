@@ -6,9 +6,9 @@ import com.champ.nocash.enums.TransactionType;
 import java.math.BigDecimal;
 
 public interface WalletTransactionService {
-    boolean deposit(BigDecimal amount, TransactionType transactionType, String payee);
+    boolean deposit(BigDecimal amount, TransactionType transactionType, String payee,String accountNumber);
 
-    boolean withdraw(BigDecimal amount, TransactionType transactionType, String payee);
+    boolean withdraw(BigDecimal amount, TransactionType transactionType, String payee, String accountNumber);
 
     BigDecimal getBalance();
 }

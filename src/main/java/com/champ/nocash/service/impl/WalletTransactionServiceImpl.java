@@ -23,7 +23,7 @@ public class WalletTransactionServiceImpl implements WalletTransactionService {
     private TransactionHistoryEntityService transactionHistoryEntityService;
 
     @Override
-    public boolean deposit(BigDecimal amount, TransactionType transactionType, String payee) {
+    public boolean deposit(BigDecimal amount, TransactionType transactionType, String payee, String accountNumber) {
         UserEntity currentUser = securityUtil.getUserEntity();
         currentUser.getWallet().deposit(amount);
         try {
@@ -36,6 +36,7 @@ public class WalletTransactionServiceImpl implements WalletTransactionService {
                 .amount(amount)
                 .transactionType(transactionType)
                 .payee(payee)
+                .accountNumber(accountNumber)
                 .build();
         try {
             transactionHistoryEntityService.save(newTransaction);
@@ -47,7 +48,7 @@ public class WalletTransactionServiceImpl implements WalletTransactionService {
     }
 
     @Override
-    public boolean withdraw(BigDecimal amount, TransactionType transactionType, String payee) {
+    public boolean withdraw(BigDecimal amount, TransactionType transactionType, String payee, String accountNumber) {
         UserEntity currentUser = securityUtil.getUserEntity();
         currentUser.getWallet().withdraw(amount);
         try {
@@ -60,6 +61,7 @@ public class WalletTransactionServiceImpl implements WalletTransactionService {
                 .amount(amount)
                 .transactionType(transactionType)
                 .payee(payee)
+                .accountNumber(accountNumber)
                 .build();
         try {
             transactionHistoryEntityService.save(newTransaction);

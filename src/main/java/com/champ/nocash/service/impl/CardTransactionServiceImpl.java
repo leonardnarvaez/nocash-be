@@ -25,11 +25,11 @@ public class CardTransactionServiceImpl implements CardTransactionService {
 
     @Override
     public boolean cashIn(BigDecimal amount, String cardId) {
-       return walletTransactionService.deposit(amount, TransactionType.CASH_IN, cardEntityService.findCardById(cardId).getName());
+       return walletTransactionService.deposit(amount, TransactionType.CASH_IN, cardEntityService.findCardById(cardId).getName(), "");
     }
 
     @Override
     public boolean cashOut(BigDecimal amount, String cardId) {
-        return walletTransactionService.withdraw(amount, TransactionType.CASH_OUT, cardEntityService.findCardById(cardId).getName());
+        return walletTransactionService.withdraw(amount, TransactionType.CASH_OUT, cardEntityService.findCardById(cardId).getName(), "");
     }
 }

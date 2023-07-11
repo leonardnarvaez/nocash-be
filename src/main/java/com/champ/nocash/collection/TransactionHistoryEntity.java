@@ -22,6 +22,7 @@ public class TransactionHistoryEntity {
     private TransactionType transactionType;
     private String payee;
     private String referenceNumber;
+    private String accountNumber;
     private LocalDateTime date;
 
 }
