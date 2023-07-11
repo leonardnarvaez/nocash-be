@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 
 @RestController
@@ -19,13 +20,23 @@ public class VerificationController {
     @Autowired
     private VerificationService verificationService;
     @PostMapping("/pin-reset")
-    public ResponseEntity<?> pinReset(@RequestBody PinResetBean pinResetBean) {
+    public ResponseEntity<?> pinReset(@RequestBody PinResetBean pinResetBean, HttpServletRequest request) {
+        if(pinResetBean.getOldPIN().equals(pinResetBean.getNewPIN())) {
+            return new ResponseEntity(ErrorResponse.builder()
+                    .error("PIN Error")
+                    .message("New Pin and Old pin must not match")
+                    .status(404)
+                    .path("/api/pin-reset")
+                    .build(), HttpStatus.BAD_REQUEST);
+        }
         try {
-            verificationService.pinReset(pinResetBean.getOldPIN(), pinResetBean.getNewPIN());
+            String ipAddress = request.getRemoteAddr();
+            String userAgent = request.getHeader("User-Agent");
+            verificationService.pinReset(pinResetBean.getOldPIN(), pinResetBean.getNewPIN(), ipAddress, userAgent);
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity(ErrorResponse.builder()
-                    .error("Failed to reset pin")
+                    .error(e.getMessage())
                     .message(e.getMessage())
                     .status(404)
                     .path("/api/pin-reset")

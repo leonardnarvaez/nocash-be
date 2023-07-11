@@ -10,5 +10,5 @@ public interface VerificationService {
     boolean requestAccountReactivation(String email) throws Exception;
     boolean verifyEmail(String email, String code) throws Exception;
     boolean reactivateAccount(String email, String code, String newPIN, String ipAddress, String userAgent) throws Exception;
-    void pinReset(String oldPIN, String newPIN) throws Exception;
+    void pinReset(String oldPIN, String newPIN, String ipAddress, String userAgent) throws Exception;
 }

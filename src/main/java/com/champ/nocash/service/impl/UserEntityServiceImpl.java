@@ -163,7 +163,8 @@ public class UserEntityServiceImpl implements UserEntityService {
         if(!passwordEncoder.matches(oldPIN, hashedUserPassword)) {
             throw new Exception("The PIN you provided does not much your account PIN");
         }
-        user.setPin(passwordEncoder.encode(newPIN));
+        String hashedNewPin = passwordEncoder.encode(newPIN);
+        user.setPin(hashedNewPin);
         updateUser(user);
     }
 
