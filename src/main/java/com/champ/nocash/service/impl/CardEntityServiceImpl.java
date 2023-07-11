@@ -20,7 +20,17 @@ public class CardEntityServiceImpl implements CardEntityService {
     private SecurityUtil securityUtil;
 
     @Override
-    public CardEntity save(CardEntity cardEntity) {
+    public CardEntity save(CardEntity cardEntity) throws Exception {
+        boolean isCardFound = false;
+        try {
+            findCardByCardId(cardEntity.getAccountNumber());
+            isCardFound = true;
+        } catch (NoSuchElementException e) {
+            isCardFound = false;
+        }
+        if(isCardFound) {
+            throw new Exception("Account number already exists.");
+        }
         UserEntity user = securityUtil.getUserEntity();
         cardEntity.setId(NumberGeneratorUtil.generateRandomId());
         if(user.getCards() != null) {
@@ -45,6 +55,23 @@ public class CardEntityServiceImpl implements CardEntityService {
         } else {
             throw new NoSuchElementException("User not found");
         }
+    }
+
+    @Override
+    public CardEntity findCardByCardId(String cardId) {
+        UserEntity user = securityUtil.getUserEntity();
+        if (user != null) {
+            List<CardEntity> cards = user.getCards();
+            if (cards != null) {
+                Optional<CardEntity> retrievedCard = cards.stream().filter(card -> card.getAccountNumber().equals(cardId)).findFirst();
+                if (retrievedCard.isPresent()) {
+                    return retrievedCard.get();
+                }
+            }
+        } else {
+            throw new NoSuchElementException("User not found");
+        }
+        throw new NoSuchElementException("Card not found");
     }
 
     @Override

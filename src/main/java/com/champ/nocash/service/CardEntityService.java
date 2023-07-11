@@ -5,9 +5,11 @@ import com.champ.nocash.collection.CardEntity;
 import java.util.List;
 
 public interface CardEntityService {
-    CardEntity save(CardEntity cardEntity);
+    CardEntity save(CardEntity cardEntity) throws Exception;
 
     List<CardEntity> findAllCards();
+
+    CardEntity findCardByCardId(String cardId);
 
     CardEntity findCardById(String id);
 
