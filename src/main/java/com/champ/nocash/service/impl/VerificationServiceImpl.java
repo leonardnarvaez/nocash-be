@@ -14,9 +14,12 @@ import com.champ.nocash.service.VerificationService;
 import com.champ.nocash.util.EmailMessageProvider;
 import com.champ.nocash.util.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
 
 @Service
 public class VerificationServiceImpl implements VerificationService {
@@ -149,10 +152,13 @@ public class VerificationServiceImpl implements VerificationService {
     }
 
     @Override
-    public void pinReset(String oldPIN, String newPIN) throws Exception {
+    public void pinReset(String oldPIN, String newPIN, String ipAddress, String userAgent) throws Exception {
         UserEntity userEntity = securityUtil.getUserEntity();
         try {
             userEntityService.updatePIN(oldPIN, newPIN);
+            userEntity = securityUtil.getUserEntity();
+            userEntity.getLoginCounter().reset();
+            userEntityService.updateUser(userEntity);
         } catch (Exception e) {
             e.printStackTrace();
             AuthenticationHistoryEntity pinReset = AuthenticationHistoryEntity.builder()
@@ -161,12 +167,28 @@ public class VerificationServiceImpl implements VerificationService {
                     .authenticationType(AuthenticationType.PIN_RESET)
                     .build();
             authenticationHistoryService.save(pinReset);
+            userEntity = securityUtil.getUserEntity();
+            userEntity.getLoginCounter().increment();
+            if(!userEntity.getLoginCounter().isValid() && !userEntity.getIsLocked()) {
+                userEntity.setIsLocked(true);
+                emailService.sendMIMEMessage(
+                        userEntity.getEmailAddress(),
+                        "Account Locked",
+                        EmailMessageProvider.getAccountLockMessage("Jon narva", ipAddress, userAgent, LocalDateTime.now()));
+            }
+            userEntityService.updateUser(userEntity);
+            if(userEntity.getIsLocked()) {
+                throw new BadCredentialsException("Your account has been locked");
+            }
+
             throw new Exception(e.getMessage());
         }
         AuthenticationHistoryEntity pinReset = AuthenticationHistoryEntity.builder()
                 .userId(userEntity.getId())
                 .isAuthenticationResultSuccess(true)
                 .authenticationType(AuthenticationType.PIN_RESET)
+                .ipAddress(ipAddress)
+                .userAgent(userAgent)
                 .build();
         authenticationHistoryService.save(pinReset);
     }
