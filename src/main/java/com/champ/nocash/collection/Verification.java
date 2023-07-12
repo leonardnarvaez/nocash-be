@@ -17,7 +17,7 @@ public class Verification {
 //    @Value("${verification.validity.minutes}")
     public static int VERIFICATION_VALIDITY_IN_MINUTES = 15;
 //    @Value("${verification.retry.minutes}")
-    public static int VERIFICATION_RETRY_IN_MINUTES = 3;
+    public static int VERIFICATION_RETRY_IN_MINUTES = 1;
     private static Random rand = new Random();
 
     private String verificationCode;

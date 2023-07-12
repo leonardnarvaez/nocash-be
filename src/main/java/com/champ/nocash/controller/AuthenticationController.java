@@ -118,7 +118,7 @@ public class AuthenticationController {
                     .path("/authentication/authenticate")
                     .build(), HttpStatus.BAD_REQUEST);
         }
-        verificationService.requestEmailVerification(user.getEmailAddress());
+//        verificationService.requestEmailVerification(user.getEmailAddress());
         return ResponseEntity.ok(newUser);
     }
 
