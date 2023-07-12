@@ -69,7 +69,7 @@ public class MerchantController {
     @PostMapping("/payment")
     public ResponseEntity<?> pay(@RequestBody BillPaymentBean billPaymentBean) {
             try {
-                billPaymentService.payBill(BigDecimal.valueOf(billPaymentBean.getAmount()), billPaymentBean.getMerchantId(), billPaymentBean.getAccountNumber());
+                billPaymentService.payBill(BigDecimal.valueOf(billPaymentBean.getAmount()), billPaymentBean.getMerchantId(), billPaymentBean.getAccountNumber(), billPaymentBean.getPin());
                 return ResponseEntity.ok(new HashMap<String, String>(){{
                     put("message", "transaction complete");
                 }});
