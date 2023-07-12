@@ -136,7 +136,7 @@ public class AuthenticationController {
                     .build(), HttpStatus.BAD_REQUEST);
         }
         return ResponseEntity.ok(new HashMap<String, String>(){{
-            put("message", "verification email has been sent");
+            put("message", "Verification email has been sent.");
         }});
     }
     @PostMapping("/request-account-reactivation")
@@ -153,7 +153,7 @@ public class AuthenticationController {
                     .build(), HttpStatus.BAD_REQUEST);
         }
         return ResponseEntity.ok(new HashMap<String, String>(){{
-            put("message", "reactivation email has been sent");
+            put("message", "Reactivation OTP has been sent to your email.");
         }});
     }
 
@@ -171,7 +171,7 @@ public class AuthenticationController {
                     .build(), HttpStatus.BAD_REQUEST);
         }
         return ResponseEntity.ok(new HashMap<String, String>(){{
-            put("message", "email successfully verified");
+            put("message", "Email successfully verified.");
         }});
     }
 
@@ -189,7 +189,7 @@ public class AuthenticationController {
                     .build(), HttpStatus.BAD_REQUEST);
         }
         return ResponseEntity.ok(new HashMap<String, String>(){{
-            put("message", "account successfully reactivated");
+            put("message", "Account successfully reactivated.");
         }});
     }
 
