@@ -37,4 +37,9 @@ public class CustomUserDetailService implements UserDetailsService {
         UserEntity userEntity = userEntityRepository.findFirstByMobileNumber(username);
         return userEntity.getIsLocked();
     }
+
+    public UserEntity getUserEntity(String username) {
+        UserEntity userEntity = userEntityRepository.findFirstByMobileNumber(username);
+        return userEntity;
+    }
 }

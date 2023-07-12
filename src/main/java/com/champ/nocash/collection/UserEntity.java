@@ -28,4 +28,5 @@ public class UserEntity {
     private LoginCounter loginCounter;
     private Wallet wallet;
     private Verification verification;
+    private Salt salt;
 }

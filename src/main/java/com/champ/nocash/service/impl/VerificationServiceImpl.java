@@ -138,6 +138,7 @@ public class VerificationServiceImpl implements VerificationService {
         }
         userEntity.setIsLocked(false);
         userEntity.setPin(passwordEncoder.encode(newPin));
+        userEntity.getSalt().refreshSalt();
         verification.inValidate();
         userEntityService.updateUser(userEntity);
         AuthenticationHistoryEntity reactivate = AuthenticationHistoryEntity.builder()
@@ -158,6 +159,7 @@ public class VerificationServiceImpl implements VerificationService {
             userEntityService.updatePIN(oldPIN, newPIN);
             userEntity = securityUtil.getUserEntity();
             userEntity.getLoginCounter().reset();
+            userEntity.getSalt().refreshSalt();
             userEntityService.updateUser(userEntity);
         } catch (Exception e) {
             e.printStackTrace();
@@ -190,6 +192,7 @@ public class VerificationServiceImpl implements VerificationService {
                 .ipAddress(ipAddress)
                 .userAgent(userAgent)
                 .build();
+
         authenticationHistoryService.save(pinReset);
     }
 }

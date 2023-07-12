@@ -42,9 +42,11 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
         if(username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = customUserDetailService.loadUserByUsername(username);
+            UserEntity userEntity = customUserDetailService.getUserEntity(username);
             String ipAddress = request.getRemoteAddr();
             String userAgent = request.getHeader("User-Agent");
-            if(jwtUtil.validateToken(jwt, userDetails, ipAddress, userAgent) && !customUserDetailService.isUserAccountLocked(username)) {
+            jwtUtil.setSalt(userEntity.getSalt().getSalt());
+            if(jwtUtil.validateToken(jwt, userDetails, ipAddress, userAgent) && !userEntity.getIsLocked()) {
                 UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);

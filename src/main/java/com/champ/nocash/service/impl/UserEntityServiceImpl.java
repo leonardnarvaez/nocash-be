@@ -74,6 +74,7 @@ public class UserEntityServiceImpl implements UserEntityService {
         user.setLoginCounter(new LoginCounter());
         user.setWallet(new Wallet());
         user.setVerification(Verification.generateAccountReactivation());
+        user.setSalt(new Salt());
         return userEntityRepository.save(user);
     }
 
@@ -138,7 +139,9 @@ public class UserEntityServiceImpl implements UserEntityService {
         // update the last login time of user
         userEntity.setLastLoginDate(LocalDateTime.now());
         userEntity.getLoginCounter().reset();
+        userEntity.getSalt().refreshSalt();
         updateUser(userEntity);
+        jwtUtil.setSalt(userEntity.getSalt().getSalt());
         final UserDetails userDetails = customUserDetailService.loadUserByUsername(authenticationRequest.getMobileNumber());
         final String jwt = jwtUtil.generateToken(userDetails, ipAddress, userAgent);
         return AuthenticationResponse.builder()

@@ -17,6 +17,13 @@ public class JwtUtil {
     @Value("${jwt.token.expiry.in.minutes}")
     private int EXPIRY_TIME;
 
+    private String salt = "";
+
+    public void setSalt(String salt) {
+        this.salt = salt;
+    }
+
+
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
@@ -39,7 +46,7 @@ public class JwtUtil {
     }
 
     private Claims extractAllClaims(String token) {
-        return Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody();
+        return Jwts.parser().setSigningKey(SECRET_KEY+salt).parseClaimsJws(token).getBody();
     }
 
     private Boolean isTokenExpired(String token) {
@@ -57,7 +64,7 @@ public class JwtUtil {
     private String createToken(Map<String, Object> claims, String subject) {
         return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * EXPIRY_TIME))
-                .signWith(SignatureAlgorithm.HS256, SECRET_KEY).compact();
+                .signWith(SignatureAlgorithm.HS256, SECRET_KEY+salt).compact();
     }
 
     public boolean validateToken(String token, UserDetails userDetails, String ipAddress, String userAgent) {

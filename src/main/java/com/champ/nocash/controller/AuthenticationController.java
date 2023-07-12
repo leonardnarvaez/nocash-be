@@ -81,6 +81,8 @@ public class AuthenticationController {
                     .ipAddress(httpServletRequest.getRemoteAddr())
                     .build();
             authenticationHistoryService.save(authenticationHistoryEntity);
+            loggedInUser.getSalt().refreshSalt();
+            userEntityService.updateUser(loggedInUser);
             return ResponseEntity.ok(new HashMap<String, String>(){{
                 put("message", "logout success");
             }});
