@@ -117,10 +117,10 @@ public class UserEntityServiceImpl implements UserEntityService {
                 }
                 updateUser(userEntity);
                 if(userEntity.getIsLocked()) {
-                    throw new BadCredentialsException("Your account has been locked");
+                    throw new BadCredentialsException("Your account has been locked. Please reset your password for account reactivation.");
                 }
             }
-            throw new BadCredentialsException("hindi legit si boss");
+            throw new BadCredentialsException("Invalid User Credentials");
         }
         if(userEntity != null) {
             // the user exists and the pin is correct
@@ -134,7 +134,7 @@ public class UserEntityServiceImpl implements UserEntityService {
             authenticationHistoryService.save(authenticationHistoryEntity);
         }
         if(userEntity.getIsLocked()) {
-            throw new BadCredentialsException("Your account has been locked");
+            throw new BadCredentialsException("Your account has been locked. Please reset your password for account reactivation.");
         }
         // update the last login time of user
         userEntity.setLastLoginDate(LocalDateTime.now());
