@@ -3,6 +3,7 @@ package com.champ.nocash.security;
 import com.champ.nocash.collection.UserEntity;
 import com.champ.nocash.service.UserEntityService;
 import com.champ.nocash.util.JwtUtil;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -17,6 +18,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Base64;
+import java.util.Map;
+
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
     @Autowired
@@ -33,7 +37,11 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         if(authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             jwt = authorizationHeader.substring(7);
             try {
-                username = jwtUtil.extractUsername(jwt);
+                String arr[] = jwt.split("[.]");
+                byte[] decodedBytes = Base64.getDecoder().decode(arr[1]);
+                ObjectMapper mapper = new ObjectMapper();
+                Map<String, String> map = mapper.readValue(decodedBytes, Map.class);
+                username = map.get("sub");
             } catch (Exception e) {
                 e.printStackTrace();
             }
