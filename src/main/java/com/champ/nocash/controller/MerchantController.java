@@ -46,17 +46,17 @@ public class MerchantController {
         return ResponseEntity.ok(newMerchantEntity);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<?> findById(@RequestBody MerchantBean merchantBean, @PathVariable String id) throws Exception {
-        Optional<MerchantEntity> optionalMerchant = merchantEntityService.findById(id);
-        if (optionalMerchant.isPresent()) {
-            return ResponseEntity.ok(optionalMerchant.get());
+    @GetMapping("/{merchantId}")
+    public ResponseEntity<?> findById(@PathVariable String merchantId) throws Exception {
+        MerchantEntity merchant = merchantEntityService.findByMerchantId(merchantId);
+        if (merchant != null) {
+            return ResponseEntity.ok(merchant);
         } else {
             return new ResponseEntity(ErrorResponse.builder()
                     .error("Merchant Not Found")
-                    .message("Merchant ID :" + id + "not registered in the database")
+                    .message("Merchant ID :" + merchantId + "not registered in the database")
                     .status(404)
-                    .path("/api/merchant/"+id)
+                    .path("/api/merchant/"+merchantId)
                     .build(), HttpStatus.NOT_FOUND);
         }
     }

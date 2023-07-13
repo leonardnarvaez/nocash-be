@@ -43,7 +43,7 @@ public class VerificationController {
                     .build(), HttpStatus.BAD_REQUEST);
         }
         return ResponseEntity.ok(new HashMap<String, String>(){{
-            put("message", "pin reset success");
+            put("message", "PIN reset success");
         }});
     }
 }
