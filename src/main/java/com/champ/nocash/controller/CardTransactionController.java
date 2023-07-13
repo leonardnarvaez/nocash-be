@@ -26,7 +26,7 @@ public class CardTransactionController {
         try {
             cardTransactionService.cashIn(BigDecimal.valueOf(cardTransactionBean.getAmount()), cardTransactionBean.getCardId(), cardTransactionBean.getPin());
             return ResponseEntity.ok(new HashMap<String, String>(){{
-                put("message", "transaction complete");
+                put("message", "Transaction complete!");
             }});
         } catch (Exception e) {
             return new ResponseEntity(ErrorResponse.builder()
@@ -43,7 +43,7 @@ public class CardTransactionController {
         try {
             cardTransactionService.cashOut(BigDecimal.valueOf(cardTransactionBean.getAmount()), cardTransactionBean.getCardId(), cardTransactionBean.getPin());
             return ResponseEntity.ok(new HashMap<String, String>(){{
-                put("message", "transaction complete");
+                put("message", "Transaction complete!");
             }});
         } catch (Exception e) {
             return new ResponseEntity(ErrorResponse.builder()

@@ -71,7 +71,7 @@ public class MerchantController {
             try {
                 billPaymentService.payBill(BigDecimal.valueOf(billPaymentBean.getAmount()), billPaymentBean.getMerchantId(), billPaymentBean.getAccountNumber(), billPaymentBean.getPin());
                 return ResponseEntity.ok(new HashMap<String, String>(){{
-                    put("message", "transaction complete");
+                    put("message", "Transaction complete!");
                 }});
             } catch (Exception e) {
                 return new ResponseEntity(ErrorResponse.builder()
