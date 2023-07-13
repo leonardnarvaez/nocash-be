@@ -31,7 +31,7 @@ public class BillPaymentServiceImpl implements BillPaymentService {
             throw new Exception("No merchant found");
         }
         if (userEntityService.validatePIN(pin)) {
-            return walletTransactionService.withdraw(amount, TransactionType.CASH_OUT, retrievedMerchant.getName(), accountNumber);
+            return walletTransactionService.withdraw(amount, TransactionType.PAY_BILL, retrievedMerchant.getName(), accountNumber);
         }
         throw new Exception("Invalid PIN");
     }
