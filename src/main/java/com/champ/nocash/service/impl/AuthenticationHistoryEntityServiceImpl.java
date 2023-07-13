@@ -29,4 +29,10 @@ public class AuthenticationHistoryEntityServiceImpl implements AuthenticationHis
     public List<AuthenticationHistoryEntity> findAll() {
         return authenticationHistoryRepository.findByUserId(securityUtil.getUserEntity().getId());
     }
+
+    @Override
+    public List<AuthenticationHistoryEntity> findAllByDate(LocalDateTime startDate, LocalDateTime endDate) {
+        return authenticationHistoryRepository.findByUserIdAndCreationTimeBetween(SecurityUtil.getUserId(), startDate, endDate);
+    }
+
 }
