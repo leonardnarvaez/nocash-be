@@ -23,17 +23,17 @@ public class CardTransactionController {
 
     @PostMapping("/cash-in")
     public ResponseEntity<?> cashIn(@RequestBody CardTransactionBean cardTransactionBean) throws Exception {
-        boolean isSuccess = cardTransactionService.cashIn(BigDecimal.valueOf(cardTransactionBean.getAmount()), cardTransactionBean.getCardId(), cardTransactionBean.getPin());
-        if (isSuccess) {
+        try {
+            cardTransactionService.cashIn(BigDecimal.valueOf(cardTransactionBean.getAmount()), cardTransactionBean.getCardId(), cardTransactionBean.getPin());
             return ResponseEntity.ok(new HashMap<String, String>(){{
                 put("message", "transaction complete");
             }});
-        } else {
+        } catch (Exception e) {
             return new ResponseEntity(ErrorResponse.builder()
                     .error("Bad Request")
-                    .message("Transaction Failed")
+                    .message(e.getMessage())
                     .status(401)
-                    .path("/api/card0")
+                    .path("/authentication/authenticate")
                     .build(), HttpStatus.BAD_REQUEST);
         }
     }

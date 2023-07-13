@@ -24,11 +24,11 @@ public class CardTransactionServiceImpl implements CardTransactionService {
     UserEntityService userEntityService;
 
     @Override
-    public boolean cashIn(BigDecimal amount, String cardId, String pin) {
+    public boolean cashIn(BigDecimal amount, String cardId, String pin) throws Exception {
         if (userEntityService.validatePIN(pin)) {
             return walletTransactionService.deposit(amount, TransactionType.CASH_IN, cardEntityService.findCardById(cardId).getName(), "");
         }
-       return false;
+        throw new Exception("Invalid PIN");
     }
 
     @Override
