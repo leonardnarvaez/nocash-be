@@ -12,8 +12,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.websocket.server.PathParam;
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 @RestController
 @RequestMapping("/api/transaction")
@@ -49,8 +54,18 @@ public class TransactionHistoryController {
 
     @GetMapping("/")
     public ResponseEntity<?> getAll(
-            @RequestParam(value = "start-date", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
-            @RequestParam(value = "end-date", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate) {
+            @RequestParam(value = "start-date", required = false) String startDateString,
+            @RequestParam(value = "end-date", required = false) String endDateString) {
+        String pattern = "yyyy-MM-dd HH:mm:ss";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
+        LocalDateTime startDate = null;
+        LocalDateTime endDate = null;
+        try {
+            startDate = LocalDateTime.parse(startDateString, formatter);
+            endDate = LocalDateTime.parse(endDateString, formatter);
+        } catch (DateTimeParseException e) {
+            e.printStackTrace();
+        }
         TransactionListBean transactionListBean = TransactionListBean.builder()
                 .startDate(startDate)
                 .endDate(endDate)
@@ -63,6 +78,21 @@ public class TransactionHistoryController {
                     .path("/authentication/authenticate")
                     .build(), HttpStatus.BAD_REQUEST);
         }
-        return ResponseEntity.ok(transactionHistoryEntityService.getAll(transactionListBean.getStartDate().atStartOfDay(), transactionListBean.getEndDate().atStartOfDay().plusHours(24)));
+        return ResponseEntity.ok(transactionHistoryEntityService.getAll(transactionListBean.getStartDate(), transactionListBean.getEndDate()));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> findOne(@PathVariable String id) {
+        TransactionHistoryEntity transactionHistoryEntity = transactionHistoryEntityService.getTransactionHistory(id);
+        if(transactionHistoryEntity != null) {
+            return ResponseEntity.ok(transactionHistoryEntity);
+        } else {
+            return new ResponseEntity(ErrorResponse.builder()
+                    .error("Bad Request")
+                    .message("No Transaction found")
+                    .status(401)
+                    .path("/authentication/authenticate")
+                    .build(), HttpStatus.BAD_REQUEST);
+        }
     }
 }

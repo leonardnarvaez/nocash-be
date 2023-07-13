@@ -10,4 +10,5 @@ import java.util.List;
 @Repository
 public interface TransactionHistoryEntityRepository extends MongoRepository<TransactionHistoryEntity, String> {
     List<TransactionHistoryEntity> findByDateBetweenAndUserId(LocalDateTime startDate, LocalDateTime endDate, String userId);
+    TransactionHistoryEntity findByIdAndUserId(String id, String userId);
 }

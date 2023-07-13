@@ -9,4 +9,5 @@ public interface TransactionHistoryEntityService {
     TransactionHistoryEntity save(TransactionHistoryEntity transaction) throws Exception;
 
     List<TransactionHistoryEntity> getAll(LocalDateTime startDate, LocalDateTime endDate);
+    TransactionHistoryEntity getTransactionHistory(String id);
 }

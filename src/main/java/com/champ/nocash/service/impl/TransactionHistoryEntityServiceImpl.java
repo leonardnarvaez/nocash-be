@@ -32,4 +32,10 @@ public class TransactionHistoryEntityServiceImpl implements TransactionHistoryEn
         String userId = securityUtil.getUserId();
         return transactionHistoryEntityRepository.findByDateBetweenAndUserId(startDate, endDate, userId);
     }
+
+    @Override
+    public TransactionHistoryEntity getTransactionHistory(String id) {
+        return transactionHistoryEntityRepository.findByIdAndUserId(id, SecurityUtil.getUserId());
+    }
+
 }
