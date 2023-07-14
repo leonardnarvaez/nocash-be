@@ -12,4 +12,5 @@ import lombok.NoArgsConstructor;
 public class MoneyTransferBean {
     private String mobileNumber;
     private Double amount;
+    private String pin;
 }
