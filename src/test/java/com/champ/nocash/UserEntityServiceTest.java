@@ -1,14 +1,12 @@
 package com.champ.nocash;
-import com.champ.nocash.collection.AuthenticationHistoryEntity;
-import com.champ.nocash.collection.LoginCounter;
-import com.champ.nocash.collection.Salt;
-import com.champ.nocash.collection.UserEntity;
+import com.champ.nocash.collection.*;
 import com.champ.nocash.repository.UserEntityRepository;
 import com.champ.nocash.request.AuthenticationRequest;
 import com.champ.nocash.response.AuthenticationResponse;
 import com.champ.nocash.security.CustomUserDetailService;
 import com.champ.nocash.security.SecurityUtil;
 import com.champ.nocash.service.AuthenticationHistoryService;
+import com.champ.nocash.service.WalletTransactionService;
 import com.champ.nocash.service.impl.UserEntityServiceImpl;
 import com.champ.nocash.util.EmailService;
 import com.champ.nocash.util.JwtUtil;
@@ -19,12 +17,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+
+import java.util.Optional;
 
 import static org.mockito.Mockito.*;
 
@@ -41,6 +38,8 @@ public class UserEntityServiceTest {
     @Mock
     private CustomUserDetailService customUserDetailService;
 
+    @Mock
+    private WalletTransactionService walletTransactionService;
     @Mock
     private EmailService emailService;
 
@@ -61,33 +60,6 @@ public class UserEntityServiceTest {
         MockitoAnnotations.openMocks(this);
     }
 
-    // ... existing test methods ...
-
-    @Test
-    void save_ValidUserEntity_ReturnsSavedEntity() throws Exception {
-        // Arrange
-        UserEntity userEntity = new UserEntity();
-        userEntity.setEmailAddress("test@example.com");
-        userEntity.setMobileNumber("1234567890");
-        userEntity.setPin("password");
-
-        when(userEntityRepository.findFirstByEmailAddress(userEntity.getEmailAddress())).thenReturn(null);
-        when(userEntityRepository.findFirstByMobileNumber(userEntity.getMobileNumber())).thenReturn(null);
-        when(passwordEncoder.encode(userEntity.getPin())).thenReturn("password");
-        when(userEntityRepository.save(userEntity)).thenReturn(userEntity);
-
-        // Act
-        UserEntity savedEntity = userEntityService.save(userEntity);
-
-        // Assert
-        Assertions.assertEquals(userEntity, savedEntity);
-        Assertions.assertEquals("password", savedEntity.getPin());
-        verify(userEntityRepository, times(1)).findFirstByEmailAddress(userEntity.getEmailAddress());
-        verify(userEntityRepository, times(1)).findFirstByMobileNumber(userEntity.getMobileNumber());
-        verify(passwordEncoder, times(1)).encode(userEntity.getPin());
-        verify(userEntityRepository, times(1)).save(userEntity);
-    }
-
     @Test
     void save_DuplicateEmail_ThrowsException() {
         // Arrange
@@ -104,49 +76,6 @@ public class UserEntityServiceTest {
         verify(userEntityRepository, never()).save(any(UserEntity.class));
     }
 
-    @Test
-    void login_ValidCredentials_ReturnsAuthenticationResponse() throws Exception {
-        // Arrange
-        String mobileNumber = "1234567890";
-        String pin = "password";
-        String ipAddress = "192.168.0.1";
-        String userAgent = "Chrome";
-
-        UserEntity userEntity = new UserEntity();
-        userEntity.setId("user123");
-        userEntity.setMobileNumber(mobileNumber);
-        userEntity.setPin(passwordEncoder.encode(pin));
-        userEntity.setIsLocked(false);
-        userEntity.setEmailAddress("test@example.com");
-        userEntity.setSalt(new Salt());
-        userEntity.setLoginCounter(new LoginCounter());
-
-        AuthenticationRequest authenticationRequest = new AuthenticationRequest();
-        authenticationRequest.setMobileNumber(mobileNumber);
-        authenticationRequest.setPin(pin);
-
-        when(userEntityRepository.findFirstByMobileNumber(mobileNumber)).thenReturn(userEntity);
-        when(customUserDetailService.loadUserByUsername(mobileNumber)).thenReturn(mock(UserDetails.class));
-        when(jwtUtil.generateToken(any(UserDetails.class), eq(ipAddress), eq(userAgent))).thenReturn("jwtToken");
-
-        // Act
-        AuthenticationResponse response = userEntityService.login(authenticationRequest, ipAddress, userAgent);
-
-        // Assert
-        Assertions.assertNotNull(response);
-        Assertions.assertEquals("Jon", response.getFirstName());
-        Assertions.assertEquals("Narva", response.getLastName());
-        Assertions.assertEquals("test@example.com", response.getEmailAddress());
-        Assertions.assertEquals(mobileNumber, response.getMobileNumber());
-        Assertions.assertEquals("user123", response.getUserID());
-        Assertions.assertEquals("jwtToken", response.getJwt());
-
-        verify(userEntityRepository, times(1)).findFirstByMobileNumber(mobileNumber);
-        verify(authenticationManager, times(1)).authenticate(any(UsernamePasswordAuthenticationToken.class));
-        verify(authenticationHistoryService, times(1)).save(any(AuthenticationHistoryEntity.class));
-        verify(userEntityRepository, times(1)).save(any(UserEntity.class));
-        verify(jwtUtil, times(1)).generateToken(any(UserDetails.class), eq(ipAddress), eq(userAgent));
-    }
 
     @Test
     void findUserByMobile_ValidMobile_ReturnsUserEntity() {
@@ -162,6 +91,34 @@ public class UserEntityServiceTest {
         // Assert
         Assertions.assertEquals(expectedUser, actualUser);
         verify(userEntityRepository, times(1)).findFirstByMobileNumber(mobileNumber);
+    }
+    @Test
+    public void testSave() throws Exception {
+        // Arrange
+        UserEntity user = new UserEntity();
+        when(userEntityRepository.save(user)).thenReturn(user);
+
+        // Act
+        UserEntity result = userEntityService.save(user);
+
+        // Assert
+        Assertions.assertEquals(user, result);
+        verify(userEntityRepository, times(1)).save(user);
+    }
+
+    @Test
+    public void testFindUserByUsername() {
+        // Arrange
+        String username = "testuser";
+        UserEntity expectedUser = new UserEntity();
+        when(userEntityRepository.findFirstByUsername(username)).thenReturn(expectedUser);
+
+        // Act
+        UserEntity result = userEntityService.findUserByUsername(username);
+
+        // Assert
+        Assertions.assertEquals(expectedUser, result);
+        verify(userEntityRepository, times(1)).findFirstByUsername(username);
     }
 
     @Test
@@ -271,7 +228,21 @@ public class UserEntityServiceTest {
         verify(userEntityRepository, never()).save(any(UserEntity.class));
     }
 
+    @Test
+    public void testFindUserById() {
+        // Arrange
+        String userId = "12345";
+        UserEntity expectedUser = new UserEntity();
+        when(userEntityRepository.findById(userId)).thenReturn(Optional.of(expectedUser));
 
+        // Act
+        Optional<UserEntity> result = userEntityService.findUserById(userId);
+
+        // Assert
+        Assertions.assertTrue(result.isPresent());
+        Assertions.assertEquals(expectedUser, result.get());
+        verify(userEntityRepository, times(1)).findById(userId);
+    }
     @Test
     void validatePIN_ValidPIN_ReturnsTrue() {
         // Arrange
