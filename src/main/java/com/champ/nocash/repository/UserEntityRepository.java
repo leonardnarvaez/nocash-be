@@ -10,4 +10,5 @@ import org.springframework.stereotype.Repository;
 public interface UserEntityRepository extends MongoRepository<UserEntity, String> {
     UserEntity findFirstByMobileNumber(String mobileNumber);
     UserEntity findFirstByEmailAddress(String email);
+    UserEntity findFirstByUsername(String username);
 }

@@ -28,6 +28,11 @@ public class TransactionHistoryEntityServiceImpl implements TransactionHistoryEn
     }
 
     @Override
+    public TransactionHistoryEntity saveAsIs(TransactionHistoryEntity trasaction) throws Exception {
+        return transactionHistoryEntityRepository.save(trasaction);
+    }
+
+    @Override
     public List<TransactionHistoryEntity> getAll(LocalDateTime startDate, LocalDateTime endDate) {
         String userId = securityUtil.getUserId();
         return transactionHistoryEntityRepository.findByCreationTimeBetweenAndUserId(startDate, endDate, userId);

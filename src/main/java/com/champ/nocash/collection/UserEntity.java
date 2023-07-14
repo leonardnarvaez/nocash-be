@@ -18,6 +18,7 @@ public class UserEntity {
     private String id;
     private String emailAddress;
     private String mobileNumber;
+    private String username;
     private String pin;
     private Boolean isActive;
     private Boolean isLocked;

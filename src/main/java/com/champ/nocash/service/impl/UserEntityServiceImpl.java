@@ -62,6 +62,11 @@ public class UserEntityServiceImpl implements UserEntityService {
     }
 
     @Override
+    public UserEntity findUserByUsername(String username) {
+        return userEntityRepository.findFirstByUsername(username);
+    }
+
+    @Override
     public UserEntity save(UserEntity user) throws Exception {
         UserEntity existingUser = findUserByEmail(user.getEmailAddress());
         if(existingUser != null) {
@@ -70,6 +75,10 @@ public class UserEntityServiceImpl implements UserEntityService {
         existingUser = findUserByMobile(user.getMobileNumber());
         if(existingUser != null) {
             throw new Exception("Mobile number already exists");
+        }
+        existingUser = findUserByUsername(user.getUsername());
+        if(existingUser != null) {
+            throw new Exception("Username already exists");
         }
         user.setPin(passwordEncoder.encode(user.getPin()));
         user.setIsLocked(false);
@@ -156,7 +165,7 @@ public class UserEntityServiceImpl implements UserEntityService {
         final UserDetails userDetails = customUserDetailService.loadUserByUsername(authenticationRequest.getMobileNumber());
         final String jwt = jwtUtil.generateToken(userDetails, ipAddress, userAgent);
         return AuthenticationResponse.builder()
-                .firstName("Jon")
+                .firstName(userEntity.getUsername())
                 .lastName("Narva")
                 .emailAddress(userEntity.getEmailAddress())
                 .mobileNumber(userEntity.getMobileNumber())
