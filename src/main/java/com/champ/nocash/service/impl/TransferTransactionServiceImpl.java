@@ -29,18 +29,18 @@ public class TransferTransactionServiceImpl implements TransferTransactionServic
         }
         UserEntity recipientUser = userEntityService.findUserByMobile(otherMobile);
         if(recipientUser == null) {
-            throw new Exception("The recipient doesnt exists");
+            throw new Exception("The recipient does not exist");
         }
         UserEntity currentUser = securityUtil.getUserEntity();
         if(currentUser.getMobileNumber().equals(recipientUser.getMobileNumber())) {
-            throw new Exception("Self transfer haha");
+            throw new Exception("Self transfer is not allowed");
         }
         WalletEntity recipientWallet = walletTransactionService.getWalletByUserId(recipientUser.getId());
         if(recipientWallet == null) {
-            throw new Exception("recipient wallet does not exists");
+            throw new Exception("Recipient wallet does not exist");
         }
         if(!userEntityService.validatePIN(pin)) {
-            throw new Exception("The pin provided is incorrect");
+            throw new Exception("The PIN provided is incorrect");
         }
         walletTransactionService.transfer(recipientWallet, amount, recipientUser, currentUser);
     }
