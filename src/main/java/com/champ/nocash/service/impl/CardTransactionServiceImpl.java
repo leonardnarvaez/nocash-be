@@ -1,7 +1,5 @@
 package com.champ.nocash.service.impl;
 
-import com.champ.nocash.collection.TransactionHistoryEntity;
-import com.champ.nocash.collection.UserEntity;
 import com.champ.nocash.enums.TransactionType;
 import com.champ.nocash.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,9 +11,6 @@ public class CardTransactionServiceImpl implements CardTransactionService {
 
     @Autowired
     WalletTransactionService walletTransactionService;
-
-    @Autowired
-    TransactionHistoryEntityService transactionHistoryEntityService;
 
     @Autowired
     CardEntityService cardEntityService;
