@@ -1,8 +1,6 @@
 package com.champ.nocash;
 import com.champ.nocash.collection.*;
 import com.champ.nocash.repository.UserEntityRepository;
-import com.champ.nocash.request.AuthenticationRequest;
-import com.champ.nocash.response.AuthenticationResponse;
 import com.champ.nocash.security.CustomUserDetailService;
 import com.champ.nocash.security.SecurityUtil;
 import com.champ.nocash.service.AuthenticationHistoryService;
@@ -17,7 +15,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 
