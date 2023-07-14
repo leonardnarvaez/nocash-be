@@ -27,7 +27,7 @@ public class TransferTransactionController {
     @PostMapping("/transfer")
     public ResponseEntity<?> trasfer(@RequestBody MoneyTransferBean bean) {
         try {
-            transferTransactionService.transfer(bean.getMobileNumber(), BigDecimal.valueOf(bean.getAmount()));
+            transferTransactionService.transfer(bean.getMobileNumber(), BigDecimal.valueOf(bean.getAmount()), bean.getPin());
         } catch (Exception e) {
             return new ResponseEntity(ErrorResponse.builder()
                     .error("Bad Request")
