@@ -1,32 +1,30 @@
 package com.champ.nocash.collection;
 
 import com.champ.nocash.enums.TransactionType;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import nonapi.io.github.classgraph.json.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
 
+import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
 @Builder
+@Entity(name="transaction_history")
 @AllArgsConstructor
 @NoArgsConstructor
-@Document(collection = "transaction")
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class TransactionHistoryEntity {
     @Id
-    private String id;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
     private String userId;
     private BigDecimal amount;
+    @Enumerated(EnumType.STRING)
     private TransactionType transactionType;
     private String payee;
     private String referenceNumber;
     private String accountNumber;
-    private LocalDateTime date;
-
+    private LocalDateTime creationTime;
 }

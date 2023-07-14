@@ -82,7 +82,7 @@ public class TransactionHistoryController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> findOne(@PathVariable String id) {
+    public ResponseEntity<?> findOne(@PathVariable Long id) {
         TransactionHistoryEntity transactionHistoryEntity = transactionHistoryEntityService.getTransactionHistory(id);
         if(transactionHistoryEntity != null) {
             return ResponseEntity.ok(transactionHistoryEntity);

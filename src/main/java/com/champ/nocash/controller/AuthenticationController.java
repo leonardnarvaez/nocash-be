@@ -106,6 +106,7 @@ public class AuthenticationController {
                 .emailAddress(registerBean.getEmailAddress())
                 .pin(registerBean.getPin())
                 .mobileNumber(registerBean.getMobileNumber())
+                .username(registerBean.getUsername())
                 .build();
         UserEntity newUser = null;
         try {

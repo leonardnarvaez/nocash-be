@@ -9,6 +9,7 @@ import java.util.Optional;
 public interface UserEntityService {
     UserEntity findUserByMobile(String mobileNumber);
     UserEntity findUserByEmail(String email);
+    UserEntity findUserByUsername(String username);
     UserEntity save(UserEntity user) throws Exception;
     UserEntity updateUser(UserEntity user) throws Exception;
 
