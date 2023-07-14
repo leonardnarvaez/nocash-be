@@ -2,7 +2,6 @@ package com.champ.nocash;
 
 import com.champ.nocash.collection.TransactionHistoryEntity;
 import com.champ.nocash.collection.UserEntity;
-import com.champ.nocash.collection.Wallet;
 import com.champ.nocash.entity.WalletEntity;
 import com.champ.nocash.enums.TransactionType;
 import com.champ.nocash.repository.WalletRepository;
@@ -17,7 +16,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.math.BigDecimal;
 
@@ -76,7 +74,7 @@ public class WalletTransactionServiceTest {
     }
 
     @Test
-    void depositFailUpdateUserTest() throws Exception {
+    void depositFailSaveTransactionTest() throws Exception {
         BigDecimal amount = new BigDecimal("100");
         String userId = "1";
         String payee = "Leonard";
@@ -87,112 +85,133 @@ public class WalletTransactionServiceTest {
 
         when(securityUtil.getUserId()).thenReturn(userId);
         when(walletRepository.findByUserId(userId)).thenReturn(wallet);
-        when(walletRepository.save(wallet)).thenThrow(new Exception());
-
-        boolean result = walletTransactionService.deposit(amount, TransactionType.CASH_IN, payee, accountNumber);
-
-        assertFalse(result);
-        verify(securityUtil).getUserEntity();
-        verify(userEntityService).updateUser(userEntity);
-        verify(transactionHistoryEntityService, never()).save(any(TransactionHistoryEntity.class));
-    }
-
-    @Test
-    void depositFailSaveTransactionTest() throws Exception {
-        BigDecimal amount = new BigDecimal("100");
-        String payee = "Leonard";
-        String accountNumber = "123";
-        Wallet wallet = new Wallet();
-        UserEntity userEntity = new UserEntity();
-        userEntity.setWallet(wallet);
-
-        when(securityUtil.getUserEntity()).thenReturn(userEntity);
-        when(userEntityService.updateUser(userEntity)).thenReturn(userEntity);
+        when(walletRepository.save(wallet)).thenReturn(wallet);
         when(transactionHistoryEntityService.save(any(TransactionHistoryEntity.class))).thenThrow(new Exception());
 
+        doThrow(new Exception()).when(transactionHistoryEntityService).save(any(TransactionHistoryEntity.class));
+
         boolean result = walletTransactionService.deposit(amount, TransactionType.CASH_IN, payee, accountNumber);
 
         assertFalse(result);
-        verify(securityUtil).getUserEntity();
-        verify(userEntityService).updateUser(userEntity);
+        verify(securityUtil).getUserId();
+        verify(walletRepository).findByUserId(userId);
+        verify(walletRepository).save(wallet);
         verify(transactionHistoryEntityService).save(any(TransactionHistoryEntity.class));
     }
 
     @Test
     void withdrawSuccessTest() throws Exception {
-        BigDecimal amount = new BigDecimal("0");
+        BigDecimal amount = new BigDecimal("100");
+        String userId = "1";
         String payee = "Leonard";
         String accountNumber = "123";
-        Wallet wallet = new Wallet();
+        WalletEntity wallet = new WalletEntity();
+        wallet.setUserId(userId);
+        wallet.setBalance(new BigDecimal("100"));
         UserEntity userEntity = new UserEntity();
-        userEntity.setWallet(wallet);
 
-        when(securityUtil.getUserEntity()).thenReturn(userEntity);
-        when(userEntityService.updateUser(userEntity)).thenReturn(userEntity);
+        when(securityUtil.getUserId()).thenReturn(userId);
+        when(walletRepository.findByUserId(userId)).thenReturn(wallet);
+        when(walletRepository.save(wallet)).thenReturn(wallet);
         when(transactionHistoryEntityService.save(any(TransactionHistoryEntity.class))).thenReturn(new TransactionHistoryEntity());
 
         boolean result = walletTransactionService.withdraw(amount, TransactionType.CASH_OUT, payee, accountNumber);
 
-        verify(securityUtil).getUserEntity();
-        verify(userEntityService).updateUser(userEntity);
+        assertTrue(result);
+        verify(securityUtil).getUserId();
+        verify(walletRepository).findByUserId(userId);
+        verify(walletRepository).save(wallet);
         verify(transactionHistoryEntityService).save(any(TransactionHistoryEntity.class));
-    }
-
-    @Test
-    void withdrawFailUpdateUserTest() throws Exception {
-        BigDecimal amount = new BigDecimal("0");
-        String payee = "Leonard";
-        String accountNumber = "123";
-        Wallet wallet = new Wallet();
-        UserEntity userEntity = new UserEntity();
-        userEntity.setWallet(wallet);
-
-        when(securityUtil.getUserEntity()).thenReturn(userEntity);
-        when(userEntityService.updateUser(userEntity)).thenThrow(new Exception());
-
-        boolean result = walletTransactionService.withdraw(amount, TransactionType.CASH_OUT, payee, accountNumber);
-
-        assertFalse(result);
-        verify(securityUtil).getUserEntity();
-        verify(userEntityService).updateUser(userEntity);
-        verify(transactionHistoryEntityService, never()).save(any(TransactionHistoryEntity.class));
     }
 
     @Test
     void withdrawFailSaveTransactionTest() throws Exception {
-        BigDecimal amount = new BigDecimal("0");
+        BigDecimal amount = new BigDecimal("100");
+        String userId = "1";
         String payee = "Leonard";
         String accountNumber = "123";
-        Wallet wallet = new Wallet();
+        WalletEntity wallet = new WalletEntity();
+        wallet.setUserId(userId);
+        wallet.setBalance(new BigDecimal("100"));
         UserEntity userEntity = new UserEntity();
-        userEntity.setWallet(wallet);
 
-        when(securityUtil.getUserEntity()).thenReturn(userEntity);
-        when(userEntityService.updateUser(userEntity)).thenReturn(userEntity);
+        when(securityUtil.getUserId()).thenReturn(userId);
+        when(walletRepository.findByUserId(userId)).thenReturn(wallet);
+        when(walletRepository.save(wallet)).thenReturn(wallet);
         when(transactionHistoryEntityService.save(any(TransactionHistoryEntity.class))).thenThrow(new Exception());
 
-        boolean result = walletTransactionService.withdraw(amount, TransactionType.CASH_OUT, payee, accountNumber);
+        doThrow(new Exception()).when(transactionHistoryEntityService).save(any(TransactionHistoryEntity.class));
+
+        boolean result = walletTransactionService.withdraw(amount, TransactionType.CASH_IN, payee, accountNumber);
 
         assertFalse(result);
-        verify(securityUtil).getUserEntity();
-        verify(userEntityService).updateUser(userEntity);
+        verify(securityUtil).getUserId();
+        verify(walletRepository).findByUserId(userId);
+        verify(walletRepository).save(wallet);
         verify(transactionHistoryEntityService).save(any(TransactionHistoryEntity.class));
     }
 
     @Test
-    void walletBalanceTest() throws Exception {
-        BigDecimal balance = new BigDecimal("0.0");
-        Wallet wallet = new Wallet();
+    void walletBalanceTest() {
+        BigDecimal amount = new BigDecimal("100");
+        String userId = "1";
+        String payee = "Leonard";
+        String accountNumber = "123";
+        WalletEntity wallet = new WalletEntity();
+        wallet.setUserId(userId);
+        wallet.setBalance(new BigDecimal("100"));
         UserEntity userEntity = new UserEntity();
-        userEntity.setWallet(wallet);
 
-        when(securityUtil.getUserEntity()).thenReturn(userEntity);
+        when(securityUtil.getUserId()).thenReturn(userId);
+        when(walletRepository.findByUserId(userId)).thenReturn(wallet);
 
         BigDecimal result = walletTransactionService.getBalance();
 
-        assertEquals(balance, result);
-        verify(securityUtil).getUserEntity();
+        assertEquals(wallet.getBalance(), result);
+        verify(securityUtil).getUserId();
+        verify(walletRepository).findByUserId(userId);
+    }
 
+    @Test
+    void walletSaveTest() {
+        WalletEntity wallet = new WalletEntity();
+
+        when(walletRepository.save(wallet)).thenReturn(wallet);
+
+        WalletEntity result = walletTransactionService.save(wallet);
+
+        assertNotNull(result);
+        assertEquals(wallet, result);
+        verify(walletRepository).save(wallet);
+    }
+
+    @Test
+    void transferTest() throws Exception {
+        BigDecimal amount = new BigDecimal("100");
+        String userId1 = "1";
+        String userId2 = "2";
+        UserEntity user1 = new UserEntity();
+        UserEntity user2 = new UserEntity();
+        user1.setId(userId1);
+        user1.setMobileNumber("09111111111");
+        user2.setId(userId2);
+        user2.setMobileNumber("09222222222");
+        WalletEntity wallet1 = new WalletEntity();
+        WalletEntity wallet2 = new WalletEntity();
+        wallet1.setUserId(userId1);
+        wallet1.setBalance(new BigDecimal("101"));
+        wallet2.setUserId(userId2);
+
+        when(walletRepository.findByUserId(userId1)).thenReturn(wallet1);
+        when(walletRepository.save(wallet1)).thenReturn(wallet1);
+        when(walletRepository.save(wallet2)).thenReturn(wallet2);
+
+        walletTransactionService.transfer(wallet2, amount, user2,user1);
+
+        verify(walletRepository).findByUserId(userId1);
+        verify(walletRepository).save(wallet1);
+        verify(walletRepository).save(wallet2);
+        verify(transactionHistoryEntityService, times(2)).saveAsIs(any(TransactionHistoryEntity.class));
     }
 
 }
