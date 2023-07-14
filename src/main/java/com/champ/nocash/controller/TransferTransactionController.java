@@ -37,7 +37,7 @@ public class TransferTransactionController {
                     .build(), HttpStatus.BAD_REQUEST);
         }
         return ResponseEntity.ok(new HashMap<String, String>(){{
-            put("message", "transfer success");
+            put("message", "Transfer success");
         }});
     }
 
