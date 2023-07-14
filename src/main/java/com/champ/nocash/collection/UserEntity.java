@@ -33,4 +33,7 @@ public class UserEntity {
     private Wallet wallet;
     private Verification verification;
     private Salt salt;
+
+    public UserEntity(String userId) {
+    }
 }
