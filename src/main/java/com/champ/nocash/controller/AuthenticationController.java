@@ -84,11 +84,11 @@ public class AuthenticationController {
             loggedInUser.getSalt().refreshSalt();
             userEntityService.updateUser(loggedInUser);
             return ResponseEntity.ok(new HashMap<String, String>(){{
-                put("message", "logout success");
+                put("message", "Logout success");
             }});
         } else {
             return ResponseEntity.ok(new HashMap<String, String>(){{
-                put("error", "not logged-in");
+                put("error", "Session expired. Please log in again.");
             }});
         }
     }
