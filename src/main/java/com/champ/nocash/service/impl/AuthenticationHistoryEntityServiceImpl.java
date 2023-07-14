@@ -32,7 +32,7 @@ public class AuthenticationHistoryEntityServiceImpl implements AuthenticationHis
 
     @Override
     public List<AuthenticationHistoryEntity> findAllByDate(LocalDateTime startDate, LocalDateTime endDate) {
-        return authenticationHistoryRepository.findByUserIdAndCreationTimeBetween(SecurityUtil.getUserId(), startDate, endDate);
+        return authenticationHistoryRepository.findByUserIdAndCreationTimeBetween(securityUtil.getUserId(), startDate, endDate);
     }
 
 }

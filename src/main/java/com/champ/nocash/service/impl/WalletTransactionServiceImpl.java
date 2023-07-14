@@ -17,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 @Service
 public class WalletTransactionServiceImpl implements WalletTransactionService {
@@ -32,7 +31,7 @@ public class WalletTransactionServiceImpl implements WalletTransactionService {
     @Override
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public boolean deposit(BigDecimal amount, TransactionType transactionType, String payee, String accountNumber) {
-        String userId = SecurityUtil.getUserId();
+        String userId = securityUtil.getUserId();
         WalletEntity wallet = walletRepository.findByUserId(userId);
         wallet.deposit(amount);
         try {
@@ -59,24 +58,34 @@ public class WalletTransactionServiceImpl implements WalletTransactionService {
     @Override
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public boolean withdraw(BigDecimal amount, TransactionType transactionType, String payee, String accountNumber) throws Exception {
-        String userId = SecurityUtil.getUserId();
+        String userId = securityUtil.getUserId();
         WalletEntity wallet = walletRepository.findByUserId(userId);
         wallet.withdraw(amount);
-        save(wallet);
+        try {
+            save(wallet);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
         TransactionHistoryEntity newTransaction = TransactionHistoryEntity.builder()
                 .amount(amount)
                 .transactionType(transactionType)
                 .payee(payee)
                 .accountNumber(accountNumber)
                 .build();
-        transactionHistoryEntityService.save(newTransaction);
+        try {
+            transactionHistoryEntityService.save(newTransaction);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
         return true;
     }
 
     @Override
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public BigDecimal getBalance() {
-        String userId = SecurityUtil.getUserId();
+        String userId = securityUtil.getUserId();
         WalletEntity wallet = walletRepository.findByUserId(userId);
         return wallet.getBalance();
     }

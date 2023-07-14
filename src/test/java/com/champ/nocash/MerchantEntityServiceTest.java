@@ -101,6 +101,10 @@ public class MerchantEntityServiceTest {
         MerchantEntity merchant = new MerchantEntity();
         merchant.setMerchantId(merchantId);
 
+        when(merchantEntityRepository.findByMerchantId(merchantId)).thenReturn(merchant);
 
+        MerchantEntity result = merchantEntityService.findByMerchantId(merchantId);
+
+        assertEquals(merchant, result);
     }
 }
