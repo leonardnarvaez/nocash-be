@@ -19,6 +19,8 @@ public class RegisterBean {
 
     private String mobileNumber;
 
+    private String username;
+
     private String pin;
 
     public boolean isValid() {
