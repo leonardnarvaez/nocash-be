@@ -1,6 +1,7 @@
 package com.champ.nocash.service;
 
 import com.champ.nocash.collection.Wallet;
+import com.champ.nocash.entity.WalletEntity;
 import com.champ.nocash.enums.TransactionType;
 
 import java.math.BigDecimal;
@@ -11,4 +12,5 @@ public interface WalletTransactionService {
     boolean withdraw(BigDecimal amount, TransactionType transactionType, String payee, String accountNumber) throws Exception;
 
     BigDecimal getBalance();
+    WalletEntity save(WalletEntity wallet);
 }

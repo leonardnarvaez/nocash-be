@@ -1,0 +1,18 @@
+version: '3'
+
+services:
+  nocash:
+    image: mariadb
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: nocash
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    volumes:
+      - mariaDB_data_container:/var/lib/nocash/mysql
+    ports:
+      - "3306:3306"
+
+volumes:
+  mariaDB_data_container:
+

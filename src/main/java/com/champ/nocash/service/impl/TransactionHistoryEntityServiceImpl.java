@@ -23,18 +23,18 @@ public class TransactionHistoryEntityServiceImpl implements TransactionHistoryEn
     public TransactionHistoryEntity save(TransactionHistoryEntity transaction) throws Exception {
         transaction.setUserId(securityUtil.getUserEntity().getId());
         transaction.setReferenceNumber(UUIDUtil.generateUniqueIdAsString());
-        transaction.setDate(LocalDateTime.now());
+        transaction.setCreationTime(LocalDateTime.now());
         return transactionHistoryEntityRepository.save(transaction);
     }
 
     @Override
     public List<TransactionHistoryEntity> getAll(LocalDateTime startDate, LocalDateTime endDate) {
         String userId = securityUtil.getUserId();
-        return transactionHistoryEntityRepository.findByDateBetweenAndUserId(startDate, endDate, userId);
+        return transactionHistoryEntityRepository.findByCreationTimeBetweenAndUserId(startDate, endDate, userId);
     }
 
     @Override
-    public TransactionHistoryEntity getTransactionHistory(String id) {
+    public TransactionHistoryEntity getTransactionHistory(Long id) {
         return transactionHistoryEntityRepository.findByIdAndUserId(id, SecurityUtil.getUserId());
     }
 

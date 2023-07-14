@@ -1,6 +1,7 @@
 package com.champ.nocash.service.impl;
 
 import com.champ.nocash.collection.*;
+import com.champ.nocash.entity.WalletEntity;
 import com.champ.nocash.enums.AuthenticationType;
 import com.champ.nocash.repository.UserEntityRepository;
 import com.champ.nocash.request.AuthenticationRequest;
@@ -10,6 +11,7 @@ import com.champ.nocash.security.CustomUserDetailService;
 import com.champ.nocash.security.SecurityUtil;
 import com.champ.nocash.service.AuthenticationHistoryService;
 import com.champ.nocash.service.UserEntityService;
+import com.champ.nocash.service.WalletTransactionService;
 import com.champ.nocash.util.EmailMessageProvider;
 import com.champ.nocash.util.EmailService;
 import com.champ.nocash.util.JwtUtil;
@@ -24,6 +26,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Optional;
@@ -46,6 +49,8 @@ public class UserEntityServiceImpl implements UserEntityService {
     private EmailService emailService;
     @Autowired
     private SecurityUtil securityUtil;
+    @Autowired
+    private WalletTransactionService walletTransactionService;
     @Override
     public UserEntity findUserByMobile(String mobileNumber) {
         return userEntityRepository.findFirstByMobileNumber(mobileNumber);
@@ -72,10 +77,16 @@ public class UserEntityServiceImpl implements UserEntityService {
         user.setTimestamp(LocalDateTime.now());
         user.setCards(new ArrayList<>());
         user.setLoginCounter(new LoginCounter());
-        user.setWallet(new Wallet());
+//        user.setWallet(new Wallet());
         user.setVerification(Verification.generateAccountReactivation());
         user.setSalt(new Salt());
-        return userEntityRepository.save(user);
+        UserEntity newUser = userEntityRepository.save(user);
+        WalletEntity wallet = WalletEntity.builder()
+                .userId(newUser.getId())
+                .balance(BigDecimal.ZERO)
+                .build();
+        walletTransactionService.save(wallet);
+        return newUser;
     }
 
     @Override
