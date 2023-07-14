@@ -20,7 +20,7 @@ public class TransferTransactionServiceImpl implements TransferTransactionServic
     @Autowired
     private SecurityUtil securityUtil;
     @Override
-    public void transfer(String otherMobile, BigDecimal amount) throws Exception {
+    public void transfer(String otherMobile, BigDecimal amount, String pin) throws Exception {
         if(otherMobile == null) {
             throw new IllegalArgumentException("Mobile number must not be null");
         }
@@ -38,6 +38,9 @@ public class TransferTransactionServiceImpl implements TransferTransactionServic
         WalletEntity recipientWallet = walletTransactionService.getWalletByUserId(recipientUser.getId());
         if(recipientWallet == null) {
             throw new Exception("recipient wallet does not exists");
+        }
+        if(!userEntityService.validatePIN(pin)) {
+            throw new Exception("The pin provided is incorrect");
         }
         walletTransactionService.transfer(recipientWallet, amount, recipientUser, currentUser);
     }

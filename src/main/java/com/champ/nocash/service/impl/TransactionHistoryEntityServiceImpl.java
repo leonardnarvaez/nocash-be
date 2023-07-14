@@ -40,7 +40,7 @@ public class TransactionHistoryEntityServiceImpl implements TransactionHistoryEn
 
     @Override
     public TransactionHistoryEntity getTransactionHistory(Long id) {
-        return transactionHistoryEntityRepository.findByIdAndUserId(id, SecurityUtil.getUserId());
+        return transactionHistoryEntityRepository.findByIdAndUserId(id, securityUtil.getUserId());
     }
 
 }
