@@ -98,11 +98,15 @@ public class CardEntityServiceImpl implements CardEntityService {
         if (user != null) {
             List<CardEntity> cards = user.getCards();
             if (cards != null) {
-                cards.removeIf(card -> card.getId().equals(id));
-                try {
-                    userEntityService.updateUser(user);
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
+                boolean removed = cards.removeIf(card -> card.getId().equals(id));
+                if (removed) {
+                    try {
+                        userEntityService.updateUser(user);
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                } else {
+                    throw new NoSuchElementException("Card not found");
                 }
             } else {
                 throw new NoSuchElementException("User does not have any cards");
@@ -111,4 +115,5 @@ public class CardEntityServiceImpl implements CardEntityService {
             throw new NoSuchElementException("User not found");
         }
     }
+
 }
