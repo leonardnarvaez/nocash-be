@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/money-transfer")
@@ -53,11 +54,24 @@ public class TransferTransactionController {
                     .build(), HttpStatus.BAD_REQUEST);
         }
 
-        String obfuscatedUsername = user.getUsername();
-        return ResponseEntity.ok(new HashMap<String, String>(){{
-            put("mobileNumber", bean.getMobileNumber());
-            put("username", obfuscatedUsername);
-        }});
+        String obfuscatedUsername = "";
+        String username = user.getUsername();
+        if(username.length() >= 3) {
+            obfuscatedUsername += username.substring(0,2);
+            for(int i = 2; i < username.length() - 1; i++) {
+                char currentChar = username.charAt(i);
+                if(currentChar == ' ') {
+                    obfuscatedUsername += ' ';
+                } else {
+                    obfuscatedUsername += '*';
+                }
+            }
+            obfuscatedUsername += username.charAt(username.length() - 1);
+        }
+        Map<String, String> respMap = new HashMap<>();
+        respMap.put("mobileNumber", bean.getMobileNumber());
+        respMap.put("username", obfuscatedUsername);
+        return ResponseEntity.ok(respMap);
     }
 
 }
