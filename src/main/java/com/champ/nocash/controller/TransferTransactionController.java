@@ -48,7 +48,7 @@ public class TransferTransactionController {
         if(user == null || !user.getIsActive() || user.getIsLocked()) {
             return new ResponseEntity(ErrorResponse.builder()
                     .error("Bad Request")
-                    .message("User is not there")
+                    .message("User not found")
                     .status(401)
                     .path("/api/money-transfer/you-there")
                     .build(), HttpStatus.BAD_REQUEST);
