@@ -184,7 +184,7 @@ public class UserEntityServiceImpl implements UserEntityService {
         UserEntity user = securityUtil.getUserEntity();
         String hashedUserPassword = user.getPin();
         if(!passwordEncoder.matches(oldPIN, hashedUserPassword)) {
-            throw new Exception("The PIN you provided does not much your account PIN");
+            throw new Exception("The PIN you provided does not match your current PIN");
         }
         String hashedNewPin = passwordEncoder.encode(newPIN);
         user.setPin(hashedNewPin);
