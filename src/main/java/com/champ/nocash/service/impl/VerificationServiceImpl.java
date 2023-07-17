@@ -165,6 +165,8 @@ public class VerificationServiceImpl implements VerificationService {
             e.printStackTrace();
             AuthenticationHistoryEntity pinReset = AuthenticationHistoryEntity.builder()
                     .userId(userEntity.getId())
+                    .ipAddress(ipAddress)
+                    .userAgent(userAgent)
                     .isAuthenticationResultSuccess(false)
                     .authenticationType(AuthenticationType.PIN_RESET)
                     .build();
