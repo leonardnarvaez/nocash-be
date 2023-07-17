@@ -133,7 +133,7 @@ public class UserEntityServiceImpl implements UserEntityService {
                     emailService.sendMIMEMessage(
                             userEntity.getEmailAddress(),
                             "Account Locked",
-                            EmailMessageProvider.getAccountLockMessage("Jon narva", ipAddress, userAgent, LocalDateTime.now()));
+                            EmailMessageProvider.getAccountLockMessage(userEntity.getUsername(), ipAddress, userAgent, LocalDateTime.now()));
                 }
                 updateUser(userEntity);
                 if(userEntity.getIsLocked()) {
@@ -166,7 +166,7 @@ public class UserEntityServiceImpl implements UserEntityService {
         final String jwt = jwtUtil.generateToken(userDetails, ipAddress, userAgent);
         return AuthenticationResponse.builder()
                 .firstName(userEntity.getUsername())
-                .lastName("Narva")
+                .lastName("")
                 .emailAddress(userEntity.getEmailAddress())
                 .mobileNumber(userEntity.getMobileNumber())
                 .jwt(jwt)

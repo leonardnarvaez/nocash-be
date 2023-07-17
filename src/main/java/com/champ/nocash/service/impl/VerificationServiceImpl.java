@@ -64,7 +64,7 @@ public class VerificationServiceImpl implements VerificationService {
         }
         Verification verification = Verification.generateEmailVerification();
         userDAL.setVerification(userEntity.getId(), verification);
-        String emailMessage = EmailMessageProvider.getEmailVerificationMessage("Jon Narva", verification.getVerificationCode());
+        String emailMessage = EmailMessageProvider.getEmailVerificationMessage(userEntity.getUsername(), verification.getVerificationCode());
         emailService.sendMIMEMessage(email, "Account Activation", emailMessage);
         return true;
     }
@@ -84,7 +84,7 @@ public class VerificationServiceImpl implements VerificationService {
         }
         Verification verification = Verification.generateAccountReactivation();
         userDAL.setVerification(userEntity.getId(), verification);
-        String emailMessage = EmailMessageProvider.getEmailVerificationMessage("Jon Narva", verification.getVerificationCode());
+        String emailMessage = EmailMessageProvider.getEmailVerificationMessage(userEntity.getUsername(), verification.getVerificationCode());
         emailService.sendMIMEMessage(email, "Account Reactivation", emailMessage);
         return true;
     }
@@ -178,7 +178,7 @@ public class VerificationServiceImpl implements VerificationService {
                 emailService.sendMIMEMessage(
                         userEntity.getEmailAddress(),
                         "Account Locked",
-                        EmailMessageProvider.getAccountLockMessage("Jon narva", ipAddress, userAgent, LocalDateTime.now()));
+                        EmailMessageProvider.getAccountLockMessage(userEntity.getUsername(), ipAddress, userAgent, LocalDateTime.now()));
             }
             userEntityService.updateUser(userEntity);
             if(userEntity.getIsLocked()) {
