@@ -54,7 +54,7 @@ public class MerchantController {
         } else {
             return new ResponseEntity(ErrorResponse.builder()
                     .error("Merchant Not Found")
-                    .message("Merchant ID :" + merchantId + "not registered in the database")
+                    .message("Merchant ID : " + merchantId + " not registered in the database")
                     .status(404)
                     .path("/api/merchant/"+merchantId)
                     .build(), HttpStatus.NOT_FOUND);
